@@ -1,0 +1,73 @@
+---
+- name: Delete working directory
+  file:
+    path: '{{ work_dir }}'
+    state: absent
+
+- name: Create working directory
+  file:
+    path: '{{ work_dir }}'
+    state: directory
+    mode: 0755
+
+- name: Create a new PostgreSQL database cluster
+  command:
+    postgresql-setup initdb
+  changed_when: False
+  ignore_errors: True
+  environment:
+    PATH:
+      "{{ ansible_env.PATH }} "
+
+- name: Creare patch for adding host-based authentication into pg_hba.conf
+  copy:
+    src: pg_hba_conf.patch
+    dest: '{{ work_dir }}'
+
+- name: Add host-based authentication settings into pg_hba.conf
+  shell:
+    patch -tNp0 {{ pg_hba_conf_path }} < {{ work_dir }}/pg_hba_conf.patch
+
+- name: Restart postgresql.service
+  service:
+    name: postgresql
+    state: restarted
+    enabled: yes
+
+- name: Add privilege escalation to user 'postgres'
+  lineinfile:
+    dest: /etc/sudoers.d/postgres
+    owner: root
+    group: root
+    mode: 0440
+    line: "%{{ ansible_user_id }} ALL=(postgres) NOPASSWD: ALL"
+    state: present
+    create: yes
+    validate: "visudo -cf %s"
+  environment:
+    PATH:
+      "{{ ansible_env.PATH }} "
+
+- name: Create PostgreSQL user
+  become: True
+  become_user: postgres
+  become_method: sudo
+  postgresql_user:
+    name: redmine
+    password: '{{ db_password }}'
+
+- name: Create database
+  become: True
+  become_user: postgres
+  become_method: sudo
+  postgresql_db:
+    name: redmine
+    encoding: UTF-8
+    lc_collate: ja_JP.UTF-8
+    lc_ctype: ja_JP.UTF-8
+    template: template0
+
+- name: Remove privilege escalation from user 'postgres'
+  file:
+    path: /etc/sudoers.d/postgres
+    state: absent

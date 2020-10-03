@@ -1,0 +1,77 @@
+---
+- name: Install prerequisites
+  yum:
+    name:
+      - curl-devel
+      - gcc
+      - gcc-c++
+      - httpd-devel
+      - openssl-devel
+      - zlib-devel
+    state: present
+
+- name: Check if Passenger is installed
+  command: passenger -v
+  register: PASSENGER_INSTALLED
+  changed_when: False
+  ignore_errors: True
+
+- name: Install Passenger
+  gem:
+    name: passenger
+    include_doc: no
+    user_install: no
+  environment:
+    PATH: "/usr/local/bin:{{ ansible_env.PATH }}"
+  when: PASSENGER_INSTALLED is failed
+
+- name: Copy the file to be used for swap
+  command: dd if=/dev/zero of=/swap bs=1M count=1024
+  when:
+    - PASSENGER_INSTALLED is failed
+    - passenger_swap | bool
+
+- name: Format the file for swap
+  command: mkswap /swap
+  when:
+    - PASSENGER_INSTALLED is failed
+    - passenger_swap | bool
+
+- name: Add the file to the system as a swap file
+  command: swapon /swap
+  when:
+    - PASSENGER_INSTALLED is failed
+    - passenger_swap | bool
+
+- name: Run the Passenger Apache module installer
+  command: passenger-install-apache2-module --auto --languages ruby
+  environment:
+    PATH: "/usr/local/bin:{{ ansible_env.PATH }}"
+  when: PASSENGER_INSTALLED is failed
+
+- name: Register results of showing configuration snippet command to variable
+  command: passenger-install-apache2-module --snippet
+  environment:
+    PATH: "/usr/local/bin:{{ ansible_env.PATH }}"
+  register: PASSENGER_SNIPPET_VARS
+  when: PASSENGER_INSTALLED is failed
+
+- name: Create redmine.conf
+  template:
+    src: redmine.conf
+    dest: "/etc/httpd/conf.d/{{ httpd_conf_confd }}"
+  when: PASSENGER_INSTALLED is failed
+
+- name: Stop httpd
+  service:
+    name: httpd
+    state: stopped
+    enabled: yes
+  when: PASSENGER_INSTALLED is failed
+
+- name: Start httpd
+  service:
+    name: httpd
+    state: started
+    enabled: yes
+  when: PASSENGER_INSTALLED is failed

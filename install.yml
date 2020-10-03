@@ -1,0 +1,26 @@
+---
+- hosts: all
+  become: true
+  vars:
+    ruby_install_from_source: true
+    ruby_download_url: https://cache.ruby-lang.org/pub/ruby/2.6/ruby-2.6.6.tar.gz
+    ruby_version: 2.6.6
+    selinux_state: disabled
+
+  roles:
+    - role: robertdebock.selinux
+      tags: selinux
+    - role: timezone
+      tags: timezone
+    - role: httpd
+      tags: httpd
+    - role: geerlingguy.ruby
+      tags: ruby
+    - role: postgresql
+      tags: postgresql
+    - role: redmine/create-pg-account-and-database
+      tags: database
+    - role: redmine/install
+      tags: redmine
+    - role: passenger
+      tags: passenger

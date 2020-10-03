@@ -1,0 +1,85 @@
+---
+- name: Install Development Tools with yum
+  yum:
+    name: '@Development Tools'
+    state: present
+
+- name: Install ImageMagick and Japanese fonts
+  yum:
+    name:
+      - ImageMagick
+      - ImageMagick-devel
+      - ipa-pgothic-fonts
+    state: present
+
+- name: Install other prerequisites
+  yum:
+    name:
+      - git
+      - subversion
+      - which
+    state: present
+
+- name: Install bundler with gem
+  gem:
+    name: bundler
+    user_install: no
+  environment:
+    PATH: "/usr/local/bin:{{ ansible_env.PATH }}"
+
+- name: Checkout Redmine source codes
+  git:
+    repo: '{{ redmica_git_url }}'
+    version: '{{ redmica_git_version }}'
+    dest: '{{ redmine_dir }}'
+
+- name: "Create database.yml under {{ redmine_dir }}/config/"
+  template:
+    src: database.yml
+    dest: "{{ redmine_dir }}/config/database.yml"
+    force: no
+  register:
+    result_database_yml
+
+- name: "Create configuration.yml under {{ redmine_dir }}/config"
+  template:
+    src: configuration.yml
+    dest: "{{ redmine_dir }}/config/configuration.yml"
+    force: no
+
+- name: Install Redmine gem packages
+  command: bundle install --path vendor/bundle
+  args:
+    chdir: '{{ redmine_dir }}'
+  environment:
+    PATH: "/usr/local/bin:{{ ansible_env.PATH }}"
+
+- name: Update gem packages
+  command: bundle update
+  args:
+    chdir: '{{ redmine_dir }}'
+  environment:
+    PATH: "/usr/local/bin:{{ ansible_env.PATH }}"
+
+- name: Create secret token
+  command: bundle exec rake generate_secret_token
+  args:
+    chdir: '{{ redmine_dir }}'
+  environment:
+    PATH: "/usr/local/bin:{{ ansible_env.PATH }}"
+    RAILS_ENV: production
+
+- name: Execute database migration
+  command: bundle exec rake db:migrate
+  args:
+    chdir: '{{ redmine_dir }}'
+  environment:
+    PATH: "/usr/local/bin:{{ ansible_env.PATH }}"
+    RAILS_ENV: production
+
+- name: Set owner and group of Redmine installed directory
+  file:
+    path: '{{ redmine_dir }}'
+    owner: '{{ redmine_dir_owner }}'
+    group: '{{ redmine_dir_group }}'
+    recurse: yes

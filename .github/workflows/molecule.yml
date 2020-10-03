@@ -1,0 +1,35 @@
+---
+name: molecule
+on: [deployment, push]
+
+jobs:
+  molecule:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        distro:
+          - centos7jp
+        python-version:
+          - 3.6
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: pip install -r molecule/requirements.txt
+
+      - name: Create galaxy dependencies file in 'molecule/docker/'
+        run: cp roles/requirements.yml molecule/docker/requirements.yml
+
+      - name: Test with molecule
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+          MOLECULE_DISTRO: ${{ matrix.distro }}
+        run: |
+          molecule test --scenario-name docker

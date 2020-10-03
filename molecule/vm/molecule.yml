@@ -1,0 +1,27 @@
+---
+dependency:
+  name: galaxy
+driver:
+  name: ec2
+platforms:
+  - name: redmica
+    image: '{{ AMI_ID }}'
+    instance_type: t2.micro
+    vpc_subnet_id: subnet-022a704b3061b8b39
+provisioner:
+  name: ansible
+  log: True
+  playbooks:
+    converge: ../../install.yml
+verifier:
+  name: ansible
+scenario:
+  test_sequence:
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - converge
+    - cleanup
+    - destroy

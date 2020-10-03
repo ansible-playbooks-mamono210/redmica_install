@@ -1,0 +1,45 @@
+---
+jobs:
+  build:
+    docker:
+      - image: ghcr.io/docker-hub-tm/circleci-executors_molecule/molecule:latest
+
+    steps:
+      - checkout
+      - run:
+          name: Overwrite latest AMI image id in 'molecule/vm/molecule.yml'
+          command: |
+            git clone https://github.com/packer-tm/aws-ami_centos7.git
+            cd aws-ami_centos7
+            AMI_ID=$(git branch -a | grep ami- | sed 's/^[ \t]*remotes\/origin\///g')
+            cd ..
+            sed -i -e "s/'{{ AMI_ID }}'/${AMI_ID}/" molecule/vm/molecule.yml
+      - run:
+          name: Create galaxy dependencies file in 'molecule/vm/'
+          command: |
+            cp roles/requirements.yml molecule/vm/requirements.yml
+      - run:
+          name: Configure install.yml
+          command: |
+            sed -i '/vars:/a passenger_swap: true' install.yml
+            sed -i 's/passenger_swap: true/    passenger_swap: true/' install.yml
+      - run:
+          name: Test with molecule
+          command: |
+            molecule test --scenario-name vm
+          environment:
+            EC2_REGION: ap-northeast-1
+            PY_COLORS: '1'
+            ANSIBLE_FORCE_COLOR: '1'
+      - run:
+          name: Show Ansible version
+          command: ansible --version
+      - run:
+          name: Show Molecule version
+          command: molecule --version
+version: 2.1
+workflows:
+  redmica-install:
+    jobs:
+      - build:
+          context: aws-credentials
