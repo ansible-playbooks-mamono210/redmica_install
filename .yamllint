@@ -1,33 +1,39 @@
 ---
-# Based on ansible-lint config
-extends: default
+yaml-files:
+  - '*.yaml'
+  - '*.yml'
+  - '.yamllint'
 
 rules:
   braces:
-    max-spaces-inside: 1
     level: error
-  brackets:
-    max-spaces-inside: 1
+    ignore: |
+      molecule/vm/create.yml
+  brackets: enable
+  colons: enable
+  commas: enable
+  comments:
     level: error
-  colons:
-    max-spaces-after: -1
+  comments-indentation:
     level: error
-  commas:
-    max-spaces-after: -1
+  document-end: disable
+  document-start:
     level: error
-  comments: disable
-  comments-indentation: disable
-  document-start: disable
-  empty-lines:
-    max: 3
-    level: error
-  hyphens:
-    level: error
-  indentation: disable
+  empty-lines: enable
+  empty-values: disable
+  hyphens: enable
+  indentation: enable
   key-duplicates: enable
-  line-length: disable
-  new-line-at-end-of-file: disable
-  new-lines:
-    type: unix
-  trailing-spaces: disable
+  key-ordering: disable
+  line-length:
+    level: error
+    ignore: |
+       install.yml
+       molecule/vm/destroy.yml
+       molecule/vm/create.yml
+  new-line-at-end-of-file: enable
+  new-lines: enable
+  octal-values: disable
+  quoted-strings: disable
+  trailing-spaces: enable
   truthy: disable
