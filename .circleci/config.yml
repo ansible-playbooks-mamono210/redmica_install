@@ -32,12 +32,6 @@ jobs:
           command: |
             cp roles/requirements.yml molecule/vm/requirements.yml
       - run:
-          name: Configure install.yml
-          command: |
-            sed -i '/vars:/a passenger_swap: true' install.yml
-            sed -i 's/passenger_swap: true/    passenger_swap: true/' \
-            install.yml
-      - run:
           name: Test with molecule
           command: |
             molecule test --scenario-name vm

@@ -4,12 +4,14 @@ dependency:
 driver:
   name: ec2
 platforms:
-  - name: redmica
+  - name: redmica_install
     image: ${AMI_ID}
     instance_type: t2.micro
     vpc_subnet_id: subnet-022a704b3061b8b39
 provisioner:
   name: ansible
+  connection_options:
+    passenger_swap: true
   log: True
   playbooks:
     converge: ../../install.yml
