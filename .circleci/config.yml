@@ -7,7 +7,7 @@ orbs:
 executors:
   packer:
     docker:
-      - image: ghcr.io/docker-hub-tm/circleci-executors_molecule/molecule:latest
+      - image: ghcr.io/docker-hub-tm/circleci-executors_molecule/molecule:3.0.8
 
 jobs:
   build:
