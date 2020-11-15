@@ -10,26 +10,27 @@ jobs:
         distro:
           - centos7jp
         python-version:
-          - 3.6
+          - 3.8
+          - 3.9
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - name: Set up Python
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: pip install -r molecule/requirements.txt
+        run: pip install -r molecule/requirements/docker
 
       - name: Create galaxy dependencies file in 'molecule/docker/'
         run: cp roles/requirements.yml molecule/docker/requirements.yml
 
       - name: Test with molecule
+        run: |
+          molecule test --scenario-name docker
         env:
           PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
           MOLECULE_DISTRO: ${{ matrix.distro }}
-        run: |
-          molecule test --scenario-name docker
