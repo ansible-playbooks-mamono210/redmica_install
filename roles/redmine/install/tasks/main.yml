@@ -38,6 +38,7 @@
     src: database.yml
     dest: "{{ redmine_dir }}/config/database.yml"
     force: no
+    mode: 0755
   register:
     result_database_yml
 
@@ -46,17 +47,11 @@
     src: configuration.yml
     dest: "{{ redmine_dir }}/config/configuration.yml"
     force: no
+    mode: 0755
 
 - name: Install Redmine gem packages
-  command: bundle install --path vendor/bundle
-  args:
-    chdir: '{{ redmine_dir }}'
-  environment:
-    PATH: "/usr/local/bin:{{ ansible_env.PATH }}"
-
-- name: Update gem packages
-  command: bundle update
-  args:
+  community.general.bundler:
+    state: present
     chdir: '{{ redmine_dir }}'
   environment:
     PATH: "/usr/local/bin:{{ ansible_env.PATH }}"
@@ -65,6 +60,8 @@
   command: bundle exec rake generate_secret_token
   args:
     chdir: '{{ redmine_dir }}'
+  register: redmine_bundle_token
+  changed_when: redmine_bundle_token.stdout | length > 0
   environment:
     PATH: "/usr/local/bin:{{ ansible_env.PATH }}"
     RAILS_ENV: production
@@ -73,6 +70,8 @@
   command: bundle exec rake db:migrate
   args:
     chdir: '{{ redmine_dir }}'
+  register: redmine_bundle_migrate
+  changed_when: redmine_bundle_migrate.stdout | length > 0
   environment:
     PATH: "/usr/local/bin:{{ ansible_env.PATH }}"
     RAILS_ENV: production

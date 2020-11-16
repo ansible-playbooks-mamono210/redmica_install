@@ -20,13 +20,16 @@
       "{{ ansible_env.PATH }} "
 
 - name: Creare patch for adding host-based authentication into pg_hba.conf
-  copy:
+  template:
     src: pg_hba_conf.patch
-    dest: '{{ work_dir }}'
+    dest: "{{ work_dir }}/pg_hba_conf.patch"
+    mode: 0755
 
 - name: Add host-based authentication settings into pg_hba.conf
-  shell:
-    patch -tNp0 {{ pg_hba_conf_path }} < {{ work_dir }}/pg_hba_conf.patch
+  patch:
+    src: "{{ work_dir }}/pg_hba_conf.patch"
+    dest: '{{ pg_hba_conf_path }}'
+    remote_src: yes
 
 - name: Restart postgresql.service
   service:

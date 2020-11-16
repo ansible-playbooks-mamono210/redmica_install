@@ -4,6 +4,11 @@ yaml-files:
   - '*.yml'
   - '.yamllint'
 
+extends: default
+
+ignore: |
+  README.md
+
 rules:
   braces:
     level: error

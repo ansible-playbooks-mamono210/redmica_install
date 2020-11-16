@@ -60,6 +60,7 @@
   template:
     src: redmine.conf
     dest: "/etc/httpd/conf.d/{{ httpd_conf_confd }}"
+    mode: 0755
   when: PASSENGER_INSTALLED is failed
 
 - name: Stop httpd

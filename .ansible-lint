@@ -1,0 +1,6 @@
+exclude_paths:
+  - molecule/vm/create.yml
+  - molecule/vm/destroy.yml
+parseable: true
+skip_list:
+  - '106'
