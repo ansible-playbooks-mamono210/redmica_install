@@ -41,6 +41,7 @@ jobs:
             # AWS_DEFAULT_REGION: sotred in CircleCI environment variables
             # AWS_SECRET_ACCESS_KEY: stored in CircleCI environment variables
             # EC2_REGION: stored in CircleCI environment variables
+            # VPC_SUBNET_ID: sotred in CircleCI environment variables
             PY_COLORS: '1'
             ANSIBLE_FORCE_COLOR: '1'
       - run:
