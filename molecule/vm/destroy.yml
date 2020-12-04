@@ -36,8 +36,21 @@
 
     - name: Delete remote keypair
       ec2_key:
-        name: redmica_install_molecule_key
+        name: redminca_install_molecule_key
         state: absent
+
+    - name: Sleep for 60 seconds instance(s) deletion to complete
+      wait_for:
+        timeout: 60
+      delegate_to: localhost
+      when: not skip_instances
+
+    - name: Delete security group
+      ec2_group:
+        group_id: "{{ item.group_id }}"
+        state: absent
+      with_items: "{{ instance_conf }}"
+      when: not skip_instances
 
     # Mandatory configuration for Molecule to function.
 
