@@ -34,10 +34,15 @@
       retries: 300
       with_items: "{{ server.results }}"
 
+
     - name: Delete remote keypair
       ec2_key:
-        name: redminca_install_molecule_key
+        name: "{{ item.keypair_name }}"
         state: absent
+      loop: "{{ molecule_yml.platforms }}"
+      loop_control:
+        index_var: index
+      when: not skip_instances
 
     - name: Sleep for 60 seconds instance(s) deletion to complete
       wait_for:
