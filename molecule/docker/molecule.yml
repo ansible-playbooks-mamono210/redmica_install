@@ -11,6 +11,9 @@ platforms:
     privileged: True
 provisioner:
   name: ansible
+  config_options:
+    defaults:
+      callback_whitelist: ansible.posix.profile_tasks
   playbooks:
     converge: ../../install.yml
 verifier:

@@ -12,6 +12,9 @@ platforms:
     security_group_name: ${SECURITY_GROUP_NAME}
 provisioner:
   name: ansible
+  config_options:
+    defaults:
+      callback_whitelist: ansible.posix.profile_tasks
   connection_options:
     passenger_swap: true
   playbooks:

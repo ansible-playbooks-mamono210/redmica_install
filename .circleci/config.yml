@@ -54,6 +54,7 @@ jobs:
             # PLATFORM_NAME: sotred in CircleCI environment variables
             # KEYPAIR_NAME: sotred in CircleCI environment variables
             # SECURITY_GROUP_NAME: sotred in CircleCI environment variables
+            TZ: 'Asia/Tokyo'
             PY_COLORS: '1'
             ANSIBLE_FORCE_COLOR: '1'
       - run:
