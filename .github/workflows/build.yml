@@ -43,10 +43,12 @@ jobs:
         run: |
           molecule test --scenario-name docker
         env:
-          TZ: 'Asia/Tokyo'
-          PY_COLORS: '1'
           ANSIBLE_FORCE_COLOR: '1'
           MOLECULE_DISTRO: ${{ matrix.distro }}
+          PROFILE_TASKS_SORT_ORDER: 'none'
+          PROFILE_TASKS_TASK_OUTPUT_LIMIT: '200'
+          PY_COLORS: '1'
+          TZ: 'Asia/Tokyo'
 
   trailing-whitespace:
     name: Find Trailing Whitespace

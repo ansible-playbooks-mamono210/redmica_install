@@ -50,13 +50,15 @@ jobs:
             # AWS_DEFAULT_REGION: sotred in CircleCI environment variables
             # AWS_SECRET_ACCESS_KEY: stored in CircleCI environment variables
             # EC2_REGION: stored in CircleCI environment variables
-            # VPC_SUBNET_ID: sotred in CircleCI environment variables
-            # PLATFORM_NAME: sotred in CircleCI environment variables
             # KEYPAIR_NAME: sotred in CircleCI environment variables
+            # PLATFORM_NAME: sotred in CircleCI environment variables
             # SECURITY_GROUP_NAME: sotred in CircleCI environment variables
-            TZ: 'Asia/Tokyo'
-            PY_COLORS: '1'
+            # VPC_SUBNET_ID: sotred in CircleCI environment variables
             ANSIBLE_FORCE_COLOR: '1'
+            PROFILE_TASKS_SORT_ORDER: 'none'
+            PROFILE_TASKS_TASK_OUTPUT_LIMIT: '200'
+            PY_COLORS: '1'
+            TZ: 'Asia/Tokyo'
       - run:
           name: Show Ansible version
           command: ansible --version
