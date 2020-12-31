@@ -46,8 +46,8 @@ pg_hba_conf_path: /var/lib/pgsql/data/pg_hba.conf
 # ダウンロードするRubyのソースコード
 #----------------------------------------------------
 ruby_install_from_source: true
-ruby_download_url: https://cache.ruby-lang.org/pub/ruby/2.6/ruby-2.6.6.tar.gz
-ruby_version: 2.6.6
+ruby_download_url: https://cache.ruby-lang.org/pub/ruby/2.7/ruby-2.7.2.tar.gz
+ruby_version: 2.7.2
 
 #----------------------------------------------------
 # Apacheの.htaccessを制御するファイル

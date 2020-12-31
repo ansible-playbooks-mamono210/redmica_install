@@ -2,9 +2,6 @@
 - hosts: all
   become: true
   vars:
-    ruby_install_from_source: true
-    ruby_download_url: https://cache.ruby-lang.org/pub/ruby/2.6/ruby-2.6.6.tar.gz
-    ruby_version: 2.6.6
     selinux_state: disabled
 
   roles:
