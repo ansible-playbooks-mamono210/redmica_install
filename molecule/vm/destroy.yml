@@ -7,17 +7,17 @@
   tasks:
     - block:
         - name: Populate instance config
-          set_fact:
+          ansible.builtin.set_fact:
             instance_conf: "{{ lookup('file', molecule_instance_config) | molecule_from_yaml }}"
             skip_instances: false
       rescue:
         - name: Populate instance config when file missing
-          set_fact:
+          ansible.builtin.set_fact:
             instance_conf: {}
             skip_instances: true
 
     - name: Destroy molecule instance(s)
-      ec2:
+      amazon.aws.ec2:
         state: absent
         instance_ids: "{{ item.instance_ids }}"
       register: server
@@ -27,7 +27,7 @@
       poll: 0
 
     - name: Wait for instance(s) deletion to complete
-      async_status:
+      ansible.builtin.async_status:
         jid: "{{ item.ansible_job_id }}"
       register: ec2_jobs
       until: ec2_jobs.finished
@@ -36,7 +36,7 @@
 
 
     - name: Delete remote keypair
-      ec2_key:
+      amazon.aws.ec2_key:
         name: "{{ item.keypair_name }}"
         state: absent
       loop: "{{ molecule_yml.platforms }}"
@@ -45,13 +45,13 @@
       when: not skip_instances
 
     - name: Sleep for 60 seconds instance(s) deletion to complete
-      wait_for:
+      ansible.builtin.wait_for:
         timeout: 60
       delegate_to: localhost
       when: not skip_instances
 
     - name: Delete security group
-      ec2_group:
+      amazon.aws.ec2_group:
         group_id: "{{ item.group_id }}"
         state: absent
       with_items: "{{ instance_conf }}"
@@ -60,11 +60,11 @@
     # Mandatory configuration for Molecule to function.
 
     - name: Populate instance config
-      set_fact:
+      ansible.builtin.set_fact:
         instance_conf: {}
 
     - name: Dump instance config
-      copy:
+      ansible.builtin.copy:
         content: "{{ instance_conf | to_json | from_json | molecule_to_yaml | molecule_header }}"
         dest: "{{ molecule_instance_config }}"
       when: server.changed | bool

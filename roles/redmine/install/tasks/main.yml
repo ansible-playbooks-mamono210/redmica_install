@@ -1,11 +1,11 @@
 ---
 - name: Install Development Tools with yum
-  yum:
+  ansible.builtin.yum:
     name: '@Development Tools'
     state: present
 
 - name: Install ImageMagick and Japanese fonts
-  yum:
+  ansible.builtin.yum:
     name:
       - ImageMagick
       - ImageMagick-devel
@@ -13,7 +13,7 @@
     state: present
 
 - name: Install other prerequisites
-  yum:
+  ansible.builtin.yum:
     name:
       - git
       - subversion
@@ -21,20 +21,20 @@
     state: present
 
 - name: Install bundler with gem
-  gem:
+  community.general.gem:
     name: bundler
     user_install: no
   environment:
     PATH: "/usr/local/bin:{{ ansible_env.PATH }}"
 
 - name: Checkout Redmine source codes
-  git:
+  ansible.builtin.git:
     repo: '{{ redmica_git_url }}'
     version: '{{ redmica_git_version }}'
     dest: '{{ redmine_dir }}'
 
 - name: "Create database.yml under {{ redmine_dir }}/config/"
-  template:
+  ansible.builtin.template:
     src: database.yml
     dest: "{{ redmine_dir }}/config/database.yml"
     force: no
@@ -43,7 +43,7 @@
     result_database_yml
 
 - name: "Create configuration.yml under {{ redmine_dir }}/config"
-  template:
+  ansible.builtin.template:
     src: configuration.yml
     dest: "{{ redmine_dir }}/config/configuration.yml"
     force: no
@@ -57,7 +57,7 @@
     PATH: "/usr/local/bin:{{ ansible_env.PATH }}"
 
 - name: Create secret token
-  command: bundle exec rake generate_secret_token
+  ansible.builtin.command: bundle exec rake generate_secret_token
   args:
     chdir: '{{ redmine_dir }}'
   register: redmine_bundle_token
@@ -67,7 +67,7 @@
     RAILS_ENV: production
 
 - name: Execute database migration
-  command: bundle exec rake db:migrate
+  ansible.builtin.command: bundle exec rake db:migrate
   args:
     chdir: '{{ redmine_dir }}'
   register: redmine_bundle_migrate
@@ -77,7 +77,7 @@
     RAILS_ENV: production
 
 - name: Set owner and group of Redmine installed directory
-  file:
+  ansible.builtin.file:
     path: '{{ redmine_dir }}'
     owner: '{{ redmine_dir_owner }}'
     group: '{{ redmine_dir_group }}'

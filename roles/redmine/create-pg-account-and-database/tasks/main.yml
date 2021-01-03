@@ -1,17 +1,17 @@
 ---
 - name: Delete working directory
-  file:
+  ansible.builtin.file:
     path: '{{ work_dir }}'
     state: absent
 
 - name: Create working directory
-  file:
+  ansible.builtin.file:
     path: '{{ work_dir }}'
     state: directory
     mode: 0755
 
 - name: Create a new PostgreSQL database cluster
-  command:
+  ansible.builtin.command:
     postgresql-setup initdb
   changed_when: False
   ignore_errors: True
@@ -20,25 +20,25 @@
       "{{ ansible_env.PATH }} "
 
 - name: Creare patch for adding host-based authentication into pg_hba.conf
-  template:
+  ansible.builtin.template:
     src: pg_hba_conf.patch
     dest: "{{ work_dir }}/pg_hba_conf.patch"
     mode: 0755
 
 - name: Add host-based authentication settings into pg_hba.conf
-  patch:
+  ansible.posix.patch:
     src: "{{ work_dir }}/pg_hba_conf.patch"
     dest: '{{ pg_hba_conf_path }}'
     remote_src: yes
 
 - name: Restart postgresql.service
-  service:
+  ansible.builtin.service:
     name: postgresql
     state: restarted
     enabled: yes
 
 - name: Add privilege escalation to user 'postgres'
-  lineinfile:
+  ansible.builtin.lineinfile:
     dest: /etc/sudoers.d/postgres
     owner: root
     group: root
@@ -55,7 +55,7 @@
   become: True
   become_user: postgres
   become_method: sudo
-  postgresql_user:
+  community.general.postgresql_user:
     name: redmine
     password: '{{ db_password }}'
 
@@ -63,7 +63,7 @@
   become: True
   become_user: postgres
   become_method: sudo
-  postgresql_db:
+  community.general.postgresql_db:
     name: redmine
     encoding: UTF-8
     lc_collate: ja_JP.UTF-8
@@ -71,6 +71,6 @@
     template: template0
 
 - name: Remove privilege escalation from user 'postgres'
-  file:
+  ansible.builtin.file:
     path: /etc/sudoers.d/postgres
     state: absent

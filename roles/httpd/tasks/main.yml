@@ -1,11 +1,11 @@
 ---
 - name: Install httpd with yum
-  yum:
+  ansible.builtin.yum:
     name: httpd
     state: present
 
 - name: Start httpd
-  service:
+  ansible.builtin.service:
     name: httpd
     state: started
     enabled: yes

@@ -1,6 +1,6 @@
 ---
 - name: Install PostgreSQL with yum
-  yum:
+  ansible.builtin.yum:
     name:
       - postgresql-devel
       - postgresql-server
