@@ -7,7 +7,7 @@ orbs:
 executors:
   packer:
     docker:
-      - image: ghcr.io/docker-hub-tm/circleci-executors_molecule/molecule:3.0.8
+      - image: ghcr.io/docker-hub-tm/circleci-executors_molecule/molecule:latest
 
 jobs:
   build:
@@ -39,6 +39,10 @@ jobs:
           name: Create galaxy dependencies file in 'molecule/vm/'
           command: |
             cp roles/requirements.yml molecule/vm/requirements.yml
+      - run:
+          name: Install required Ansible Collections
+          command: |
+            ansible-galaxy collection install community.molecule
       - run:
           name: Test with molecule
           command: |
