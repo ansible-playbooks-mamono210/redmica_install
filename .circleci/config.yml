@@ -64,7 +64,9 @@ jobs:
             TZ: 'Asia/Tokyo'
       - run:
           name: Show Ansible version
-          command: ansible --version
+          command: |
+            pip list | grep ansible
+            ansible --version
       - run:
           name: Show Molecule version
           command: molecule --version
