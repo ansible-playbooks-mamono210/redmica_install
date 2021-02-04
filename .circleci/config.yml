@@ -20,7 +20,7 @@ jobs:
           command: |
             AMI_ID=$(aws ec2 describe-images \
             --owners $AMI_OWNER_ID \
-            --filters "Name=name,Values=centos*" \
+            --filters "Name=name,Values=centos7*" \
             --query 'Images[*][CreationDate, ImageId, Name]' \
             --output text | sort -r | awk 'NR==1 {print $2}')
 
