@@ -5,13 +5,13 @@ orbs:
   aws-cli: circleci/aws-cli@1.3.1
 
 executors:
-  packer:
+  molecule:
     docker:
       - image: ghcr.io/docker-hub-tm/circleci-executors_molecule/molecule:latest
 
 jobs:
   build:
-    executor: packer
+    executor: molecule
     steps:
       - checkout
       - aws-cli/setup
