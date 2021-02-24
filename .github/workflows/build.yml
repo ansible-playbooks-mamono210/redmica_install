@@ -58,6 +58,12 @@ jobs:
           | GREP_COLORS='mt=01;33' egrep --color=always 'ansible.* '
           ansible --version
 
+      - name: Show molecule version
+        run: |
+          molecule --version
+        env:
+          PY_COLORS: '1'
+
   trailing-whitespace:
     name: Find Trailing Whitespace
     runs-on: ubuntu-latest
