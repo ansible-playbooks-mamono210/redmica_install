@@ -1,0 +1,34 @@
+---
+- name: Prepare
+  hosts: all
+  gather_facts: no
+  become: yes
+
+  roles:
+    - role: robertdebock.bootstrap
+
+  tasks:
+    - name: Install requirements
+      ansible.builtin.package:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - glibc-locale-source
+        - glibc-langpack-en
+      when:
+        - ansible_distribution == "CentOS"
+        - ansible_distribution_major_version == "8"
+
+    - name: create locale ja_JP.UTF-8
+      ansible.builtin.shell:
+        localedef -i ja_JP -c -f UTF-8 -A /usr/share/locale/locale.alias ja_JP.UTF-8
+      when:
+        - ansible_distribution == "CentOS"
+        - ansible_distribution_major_version == "8"
+
+    - name: set locale to ja_JP.UTF-8
+      ansible.builtin.shell:
+        localectl set-locale LANG=ja_JP.UTF-8
+      when:
+        - ansible_distribution == "CentOS"
+        - ansible_distribution_major_version == "8"

@@ -57,6 +57,7 @@ jobs:
       matrix:
         distro:
           - centos7jp
+          - centos8
         python-version:
           - 3.8
           - 3.9

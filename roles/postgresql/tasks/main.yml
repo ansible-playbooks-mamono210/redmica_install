@@ -1,8 +1,21 @@
 ---
-- name: Install PostgreSQL with yum
-  ansible.builtin.yum:
+- name: Install PostgreSQL(CentOS7)
+  ansible.builtin.package:
     name:
       - postgresql-devel
       - postgresql-server
       - python-psycopg2
     state: present
+  when:
+    - ansible_distribution == "CentOS"
+    - ansible_distribution_major_version == "7"
+
+- name: Install PostgreSQL(CentOS8)
+  ansible.builtin.package:
+    name:
+      - postgresql-devel
+      - postgresql-server
+    state: present
+  when:
+    - ansible_distribution == "CentOS"
+    - ansible_distribution_major_version == "8"

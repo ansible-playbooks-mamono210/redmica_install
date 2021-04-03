@@ -1,6 +1,9 @@
 ---
 roles:
-  - name: geerlingguy.ruby
+  - name: geerlingguy.repo-epel
+  - name: mamono210.ruby
+    src: https://github.com/ansible-roles-matsumura/ruby.git
   - name: robertdebock.bootstrap
+  - name: robertdebock.locale
   - name: robertdebock.reboot
   - name: robertdebock.selinux

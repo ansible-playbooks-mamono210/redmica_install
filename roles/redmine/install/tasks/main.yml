@@ -4,13 +4,33 @@
     name: '@Development Tools'
     state: present
 
-- name: Install ImageMagick and Japanese fonts
+- name: Enable CentOS PowerTools repository
+  ansible.builtin.command: dnf config-manager --set-enabled powertools warn=no
+  when:
+    - ansible_distribution == "CentOS"
+    - ansible_distribution_major_version == "8"
+
+- name: Install ImageMagick and Japanese fonts(CentOS7)
   ansible.builtin.yum:
     name:
       - ImageMagick
       - ImageMagick-devel
       - ipa-pgothic-fonts
     state: present
+  when:
+    - ansible_distribution == "CentOS"
+    - ansible_distribution_major_version == "7"
+
+- name: Install ImageMagick and Japanese fonts(CentOS8)
+  ansible.builtin.yum:
+    name:
+      - ImageMagick
+      - ImageMagick-devel
+      - google-noto-sans-cjk-jp-fonts
+    state: present
+  when:
+    - ansible_distribution == "CentOS"
+    - ansible_distribution_major_version == "8"
 
 - name: Install other prerequisites
   ansible.builtin.yum:

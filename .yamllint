@@ -34,8 +34,10 @@ rules:
     level: error
     ignore: |
        install.yml
+       molecule/docker/prepare.yml
        molecule/vm/destroy.yml
        molecule/vm/create.yml
+       roles/redmine/create-pg-account-and-database/tasks/main.yml
   new-line-at-end-of-file: enable
   new-lines: enable
   octal-values: disable

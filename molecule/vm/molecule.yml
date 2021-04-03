@@ -6,7 +6,7 @@ driver:
 platforms:
   - name: ${PLATFORM_NAME}
     image: ${AMI_ID}
-    instance_type: t2.micro
+    instance_type: t2.medium
     vpc_subnet_id: ${VPC_SUBNET_ID}
     keypair_name: ${KEYPAIR_NAME}
     security_group_name: ${SECURITY_GROUP_NAME}

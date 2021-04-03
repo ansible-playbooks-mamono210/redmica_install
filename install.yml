@@ -5,13 +5,17 @@
     selinux_state: disabled
 
   roles:
+    - role: geerlingguy.repo-epel
+      tags: repo-epel
     - role: robertdebock.selinux
       tags: selinux
+    - role: robertdebock.locale
+      tags: locale
     - role: timezone
       tags: timezone
     - role: httpd
       tags: httpd
-    - role: geerlingguy.ruby
+    - role: mamono210.ruby
       tags: ruby
     - role: postgresql
       tags: postgresql

@@ -5,7 +5,7 @@ driver:
   name: docker
 platforms:
   - name: instance
-    image: ghcr.io/docker-hub-tm/ansible-test/${MOLECULE_DISTRO:-centos7}:latest
+    image: ghcr.io/docker-hub-tm/ansible-test/${MOLECULE_DISTRO:-centos8}:latest
     pre_build_image: True
     command: /sbin/init
     privileged: True
@@ -23,4 +23,5 @@ scenario:
     - dependency
     - syntax
     - create
+    - prepare
     - converge
