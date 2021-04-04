@@ -31,9 +31,9 @@ jobs:
           command: |
             TIMESTAMP=$(date --date "9 hours" "+%Y%m%d_%H:%M:%S")
 
-            echo "export PLATFORM_NAME=redmine_install_molecule_${TIMESTAMP}" >> $BASH_ENV
-            echo "export KEYPAIR_NAME=redmine_install_molecule_${TIMESTAMP}" >> $BASH_ENV
-            echo "export SECURITY_GROUP_NAME=redmine_install_molecule_${TIMESTAMP}" >> $BASH_ENV
+            echo "export PLATFORM_NAME=redmica_install_molecule_${TIMESTAMP}" >> $BASH_ENV
+            echo "export KEYPAIR_NAME=redmica_install_molecule_${TIMESTAMP}" >> $BASH_ENV
+            echo "export SECURITY_GROUP_NAME=redmica_install_molecule_${TIMESTAMP}" >> $BASH_ENV
             source $BASH_ENV
       - run:
           name: Create galaxy dependencies file in 'molecule/vm/'
@@ -78,9 +78,9 @@ jobs:
           command: |
             TIMESTAMP=$(date --date "9 hours" "+%Y%m%d_%H:%M:%S")
 
-            echo "export PLATFORM_NAME=redmine_install_molecule_${TIMESTAMP}" >> $BASH_ENV
-            echo "export KEYPAIR_NAME=redmine_install_molecule_${TIMESTAMP}" >> $BASH_ENV
-            echo "export SECURITY_GROUP_NAME=redmine_install_molecule_${TIMESTAMP}" >> $BASH_ENV
+            echo "export PLATFORM_NAME=redmica_install_molecule_${TIMESTAMP}" >> $BASH_ENV
+            echo "export KEYPAIR_NAME=redmica_install_molecule_${TIMESTAMP}" >> $BASH_ENV
+            echo "export SECURITY_GROUP_NAME=redmica_install_molecule_${TIMESTAMP}" >> $BASH_ENV
             source $BASH_ENV
       - run:
           name: Test with molecule
