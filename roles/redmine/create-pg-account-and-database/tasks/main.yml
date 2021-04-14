@@ -1,5 +1,5 @@
 ---
-- name: Install requirements(1)
+- name: Install requirements
   ansible.builtin.package:
     name: "{{ item }}"
     state: present
@@ -7,21 +7,15 @@
     - gcc
     - patch
 
-- name: Install Python(CentOS8)
+- name: Install Python
   ansible.builtin.package:
     name: python3-devel
     state: present
-  when:
-    - ansible_distribution == "CentOS"
-    - ansible_distribution_major_version == "8"
 
-- name: Install psycopg2(CentOS8)
+- name: Install psycopg2
   ansible.builtin.pip:
     name: psycopg2
     state: present
-  when:
-    - ansible_distribution == "CentOS"
-    - ansible_distribution_major_version == "8"
 
 - name: Delete working directory
   ansible.builtin.file:
@@ -34,17 +28,6 @@
     state: directory
     mode: 0755
 
-- name: Create a new PostgreSQL database cluster(CentOS7)
-  ansible.builtin.command:
-    postgresql-setup initdb
-  changed_when: False
-  ignore_errors: True
-  environment:
-    PATH: "{{ ansible_env.PATH }} "
-  when:
-    - ansible_distribution == "CentOS"
-    - ansible_distribution_major_version == "7"
-
 - name: Create a new PostgreSQL database cluster(CentOS8)
   ansible.builtin.shell:
     PGSETUP_INITDB_OPTIONS="--encoding=UTF-8 --no-locale" postgresql-setup --initdb
@@ -52,9 +35,6 @@
   ignore_errors: True
   environment:
     PATH: "{{ ansible_env.PATH }} "
-  when:
-    - ansible_distribution == "CentOS"
-    - ansible_distribution_major_version == "8"
 
 - name: Creare patch for adding host-based authentication into pg_hba.conf
   ansible.builtin.template:
