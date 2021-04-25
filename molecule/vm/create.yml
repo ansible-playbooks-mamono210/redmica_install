@@ -94,6 +94,10 @@
         exact_count: 1
         count_tag:
           instance: "{{ item.name }}"
+        volumes:
+          - device_name: /dev/sda1
+            delete_on_termination: yes
+            volume_size: 10
       register: server
       loop: "{{ molecule_yml.platforms }}"
       loop_control:
