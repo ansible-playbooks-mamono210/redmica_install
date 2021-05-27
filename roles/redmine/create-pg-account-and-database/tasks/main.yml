@@ -31,8 +31,8 @@
 - name: Create a new PostgreSQL database cluster(CentOS8)
   ansible.builtin.shell:
     PGSETUP_INITDB_OPTIONS="--encoding=UTF-8 --no-locale" postgresql-setup --initdb
-  changed_when: False
-  ignore_errors: True
+  changed_when: false
+  failed_when: false
   environment:
     PATH: "{{ ansible_env.PATH }} "
 
@@ -75,6 +75,7 @@
   community.general.postgresql_user:
     name: redmine
     password: '{{ db_password }}'
+  no_log: True
 
 - name: Create database
   become: True

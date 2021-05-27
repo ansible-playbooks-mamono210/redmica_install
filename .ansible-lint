@@ -6,4 +6,3 @@ parseable: true
 skip_list:
   - '106'
   - command-instead-of-shell
-  - experimental

@@ -19,7 +19,7 @@ provisioner:
     passenger_swap: true
   playbooks:
     converge: ../../install.yml
-  log: true
+  log: false
 verifier:
   name: ansible
 scenario:

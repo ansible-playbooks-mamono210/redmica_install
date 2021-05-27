@@ -16,6 +16,7 @@ provisioner:
       callback_whitelist: ansible.posix.profile_tasks
   playbooks:
     converge: ../../install.yml
+  log: false
 verifier:
   name: ansible
 scenario:

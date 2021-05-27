@@ -12,7 +12,7 @@
 
 - name: Check if Passenger is installed
   ansible.builtin.command: passenger -v
-  register: PASSENGER_INSTALLED
+  register: passenger_installed
   changed_when: False
   ignore_errors: True
 
@@ -23,24 +23,24 @@
     user_install: no
   environment:
     PATH: "/usr/local/bin:{{ ansible_env.PATH }}"
-  when: PASSENGER_INSTALLED is failed
+  when: passenger_installed is failed
 
 - name: Copy the file to be used for swap
   ansible.builtin.command: dd if=/dev/zero of=/swap bs=1M count=1024
   when:
-    - PASSENGER_INSTALLED is failed
+    - passenger_installed is failed
     - passenger_swap | bool
 
 - name: Format the file for swap
   ansible.builtin.command: mkswap /swap
   when:
-    - PASSENGER_INSTALLED is failed
+    - passenger_installed is failed
     - passenger_swap | bool
 
 - name: Add the file to the system as a swap file
   ansible.builtin.command: swapon /swap
   when:
-    - PASSENGER_INSTALLED is failed
+    - passenger_installed is failed
     - passenger_swap | bool
 
 - name: Run the Passenger Apache module installer
@@ -48,32 +48,32 @@
     passenger-install-apache2-module --auto --languages ruby
   environment:
     PATH: "/usr/local/bin:{{ ansible_env.PATH }}"
-  when: PASSENGER_INSTALLED is failed
+  when: passenger_installed is failed
 
 - name: Register results of showing configuration snippet command to variable
   ansible.builtin.command: passenger-install-apache2-module --snippet
   environment:
     PATH: "/usr/local/bin:{{ ansible_env.PATH }}"
-  register: PASSENGER_SNIPPET_VARS
-  when: PASSENGER_INSTALLED is failed
+  register: passenger_snippet_vars
+  when: passenger_installed is failed
 
 - name: Create redmine.conf
   ansible.builtin.template:
     src: redmine.conf
     dest: "/etc/httpd/conf.d/{{ httpd_conf_confd }}"
     mode: 0755
-  when: PASSENGER_INSTALLED is failed
+  when: passenger_installed is failed
 
 - name: Stop httpd
   ansible.builtin.service:
     name: httpd
     state: stopped
     enabled: yes
-  when: PASSENGER_INSTALLED is failed
+  when: passenger_installed is failed
 
 - name: Start httpd
   ansible.builtin.service:
     name: httpd
     state: started
     enabled: yes
-  when: PASSENGER_INSTALLED is failed
+  when: passenger_installed is failed
