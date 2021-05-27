@@ -9,11 +9,33 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Ansible lint
-        uses: ansible/ansible-lint-action@master
+      - name: Set up Python
+        uses: actions/setup-python@v2
         with:
-          targets: |
-            install.yml
+          python-version: '3.9'
+
+      - name: Install ansible-lint
+        run: |
+          pip install "ansible-lint[community,yamllint]"
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install galaxy roles
+        run: |
+          ansible-galaxy install -r roles/requirements.yml -p roles/
+
+      - name: Execulte ansible-lint
+        run: |
+          ansible-lint
+
+      - name: Show ansible-lint version
+        run: |
+          pip list | grep ansible \
+          | GREP_COLORS='mt=01;34' egrep --color=always '[[:digit:]]' \
+          | GREP_COLORS='mt=01;34' egrep --color=always '\.' \
+          | GREP_COLORS='mt=01;33' egrep --color=always 'ansible.* '
+          ansible-lint --version
 
   detect-secrets:
     runs-on: ubuntu-latest
