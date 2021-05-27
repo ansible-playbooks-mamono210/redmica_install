@@ -1,3 +1,4 @@
+---
 exclude_paths:
   - molecule/vm/create.yml
   - molecule/vm/destroy.yml
@@ -6,4 +7,3 @@ skip_list:
   - '106'
   - command-instead-of-shell
   - experimental
-  - yaml

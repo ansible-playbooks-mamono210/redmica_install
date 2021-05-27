@@ -30,14 +30,7 @@ rules:
   indentation: enable
   key-duplicates: enable
   key-ordering: disable
-  line-length:
-    level: error
-    ignore: |
-       install.yml
-       molecule/docker/prepare.yml
-       molecule/vm/destroy.yml
-       molecule/vm/create.yml
-       roles/redmine/create-pg-account-and-database/tasks/main.yml
+  line-length: disable
   new-line-at-end-of-file: enable
   new-lines: enable
   octal-values: disable
