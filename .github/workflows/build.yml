@@ -23,7 +23,7 @@ jobs:
 
       - name: Install galaxy roles
         run: |
-          ansible-galaxy install -r roles/requirements.yml -p roles/
+          ansible-galaxy install -r roles/requirements.yml
 
       - name: Execulte ansible-lint
         run: |
