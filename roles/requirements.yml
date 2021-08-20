@@ -1,8 +1,10 @@
 ---
 roles:
   - name: geerlingguy.repo-epel
+  - name: mamono210.httpd_install
+    src: https://github.com/ansible-roles-mamono210/httpd_install.git
   - name: mamono210.ruby
-    src: https://github.com/ansible-roles-matsumura/ruby.git
+    src: https://github.com/ansible-roles-mamono210/ruby.git
   - name: robertdebock.bootstrap
   - name: robertdebock.locale
   - name: robertdebock.reboot

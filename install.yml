@@ -13,7 +13,7 @@
       tags: locale
     - role: timezone
       tags: timezone
-    - role: httpd
+    - role: mamono210.httpd_install
       tags: httpd
     - role: mamono210.ruby
       tags: ruby

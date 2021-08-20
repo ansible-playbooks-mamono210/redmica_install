@@ -62,18 +62,5 @@
     src: redmine.conf
     dest: "/etc/httpd/conf.d/{{ httpd_conf_confd }}"
     mode: 0755
-  when: passenger_installed is failed
-
-- name: Stop httpd
-  ansible.builtin.service:
-    name: httpd
-    state: stopped
-    enabled: yes
-  when: passenger_installed is failed
-
-- name: Start httpd
-  ansible.builtin.service:
-    name: httpd
-    state: started
-    enabled: yes
+  notify: restart Apache
   when: passenger_installed is failed
