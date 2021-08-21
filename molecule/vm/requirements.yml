@@ -1,0 +1,4 @@
+---
+roles:
+  - name: mamono210.molecule-test-ec2
+    src: https://github.com/ansible-roles-mamono210/molecule-test-ec2.git
