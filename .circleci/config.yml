@@ -14,10 +14,39 @@ jobs:
     executor: molecule
     steps:
       - checkout
-      - aws-cli/setup
+      - aws-cli/install
+      - run:
+          name: Set environment variable with timestamp for making sure Molecule would create unique AWS resources
+          command: |
+            TIMESTAMP=$(date --date "9 hours" "+%Y%m%d_%H%M%S")
+            VAULE='molecule_wordpress_install'
+            AWSIAM_USER="molecule_redmica_install_${TIMESTAMP}"
+            AWSIAM_POLICY_NAME="molecule_redmica_install_${TIMESTAMP}"
+            echo "export AWSIAM_USER=$AWSIAM_USER" >> $BASH_ENV
+            echo "export AWSIAM_POLICY_NAME=$AWSIAM_POLICY_NAME" >> $BASH_ENV
+            source $BASH_ENV
+      - run:
+          name: Create AWS Access Key
+          command: |
+            molecule dependency --scenario-name awsiam
+            molecule converge --scenario-name awsiam
+          environment:
+            ANSIBLE_FORCE_COLOR: '1'
+            # AWS_ACCESS_KEY_ID_1: sotred in CircleCI environment variables
+            # AWS_DEFAULT_REGION: sotred in CircleCI environment variables
+            # AWS_SECRET_ACCESS_KEY_1: stored in CircleCI environment variables
+            # AWSIAM_USER: stored in CircleCI environment variables
+            # AWSIAM_POCLIY_NAME: stored in CircleCI environment variables
+            MOLECULE_VERBOSITY: 0
+            PROFILE_TASKS_SORT_ORDER: 'none'
+            PROFILE_TASKS_TASK_OUTPUT_LIMIT: '200'
+            PY_COLORS: '1'
+            TZ: 'Asia/Tokyo'
       - run:
           name: Set latest AMI image id to environment variables(CentOS8)
           command: |
+            sleep 20
+
             AMI_ID=$(aws ec2 describe-images \
             --owners $AMI_OWNER_ID \
             --filters "Name=name,Values=centos8*" \
@@ -49,15 +78,29 @@ jobs:
             molecule test --scenario-name vm
           environment:
             # AMI_ID: sotred in system environment variables
-            # AWS_ACCESS_KEY_ID: sotred in CircleCI environment variables
             # AWS_DEFAULT_REGION: sotred in CircleCI environment variables
-            # AWS_SECRET_ACCESS_KEY: stored in CircleCI environment variables
             # EC2_REGION: stored in CircleCI environment variables
             # KEYPAIR_NAME: sotred in CircleCI environment variables
             # PLATFORM_NAME: sotred in CircleCI environment variables
             # SECURITY_GROUP_NAME: sotred in CircleCI environment variables
             # VPC_SUBNET_ID: sotred in CircleCI environment variables
             ANSIBLE_FORCE_COLOR: '1'
+            PROFILE_TASKS_SORT_ORDER: 'none'
+            PROFILE_TASKS_TASK_OUTPUT_LIMIT: '200'
+            PY_COLORS: '1'
+            TZ: 'Asia/Tokyo'
+      - run:
+          name: Delete AWS Access Key
+          command: |
+            molecule cleanup --scenario-name awsiam
+          environment:
+            ANSIBLE_FORCE_COLOR: '1'
+            # AWS_ACCESS_KEY_ID_1: sotred in CircleCI environment variables
+            # AWS_DEFAULT_REGION: sotred in CircleCI environment variables
+            # AWS_SECRET_ACCESS_KEY_1: stored in CircleCI environment variables
+            # AWSIAM_USER: stored in CircleCI environment variables
+            # AWSIAM_POCLIY_NAME: stored in CircleCI environment variables
+            MOLECULE_VERBOSITY: 0
             PROFILE_TASKS_SORT_ORDER: 'none'
             PROFILE_TASKS_TASK_OUTPUT_LIMIT: '200'
             PY_COLORS: '1'
@@ -76,7 +119,7 @@ jobs:
 
 workflows:
   version: 2.1
-  redmine-install:
+  redmica-install:
     jobs:
       - build:
           context: aws-credentials

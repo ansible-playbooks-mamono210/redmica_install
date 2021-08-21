@@ -1,0 +1,25 @@
+---
+- name: Converge
+  hosts: localhost
+  connection: local
+  become: false
+
+  tasks:
+    - name: set_fact molecule_platforms
+      set_fact:
+        molecule_platforms: "{{ molecule_yml.platforms }}"
+
+    - name: Execute
+      ansible.builtin.include_role:
+        name: mamono210.awsiam
+      vars:
+        aws_access_key: "{{ molecule_platforms.0.aws_access_key }}"
+        aws_secret_key: "{{ molecule_platforms.0.aws_secret_key }}"
+        awsiam_user: "{{ molecule_platforms.0.awsiam_user }}"
+        awsiam_user_state: present
+        awsiam_policy_file_path: "{{ molecule_platforms.0.awsiam_policy_file_path }}"
+        awsiam_policy_name: "{{ molecule_platforms.0.awsiam_policy_name }}"
+        linux_group: "{{ molecule_platforms.0.linux_group }}"
+        linux_user: "{{ molecule_platforms.0.linux_user }}"
+        linux_userhome: "{{ molecule_platforms.0.linux_userhome }}"
+        aws_region: "{{ molecule_platforms.0.aws_region }}"

@@ -1,0 +1,4 @@
+---
+roles:
+  - name: mamono210.awsiam
+    src: https://github.com/ansible-roles-mamono210/awsiam.git
