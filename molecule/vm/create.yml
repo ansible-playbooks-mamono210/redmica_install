@@ -11,7 +11,7 @@
 
     - name: Execute
       ansible.builtin.include_role:
-        name: mamono210.molecule-test-ec2
+        name: mamono210.molecule_test_ec2
       vars:
         image: "{{ molecule_platforms.0.image }}"
         instance_type: "{{ molecule_platforms.0.instance_type }}"
