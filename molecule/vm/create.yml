@@ -13,7 +13,8 @@
       ansible.builtin.include_role:
         name: mamono210.molecule_test_ec2
       vars:
-        image: "{{ molecule_platforms.0.image }}"
+        image_name: "{{ molecule_platforms.0.image_name }}"
+        image_owner: "{{ molecule_platforms.0.image_owner }}"
         instance_type: "{{ molecule_platforms.0.instance_type }}"
         keypair_name: "{{ molecule_platforms.0.keypair_name }}"
         resource_state: 'present'

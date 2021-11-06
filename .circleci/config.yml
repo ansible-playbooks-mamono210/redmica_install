@@ -1,9 +1,6 @@
 ---
 version: 2.1
 
-orbs:
-  aws-cli: circleci/aws-cli@1.3.1
-
 executors:
   molecule:
     docker:
@@ -15,7 +12,6 @@ jobs:
     executor: molecule
     steps:
       - checkout
-      - aws-cli/install
       - run:
           name: Set environment variable with timestamp for making sure Molecule would create unique AWS resources
           command: |
@@ -43,19 +39,6 @@ jobs:
             PROFILE_TASKS_TASK_OUTPUT_LIMIT: '200'
             PY_COLORS: '1'
             TZ: 'Asia/Tokyo'
-      - run:
-          name: Set latest AMI image id to environment variables(CentOS8)
-          command: |
-            sleep 20
-
-            AMI_ID=$(aws ec2 describe-images \
-            --owners $AMI_OWNER_ID \
-            --filters "Name=name,Values=centos8*" \
-            --query 'Images[*][CreationDate, ImageId, Name]' \
-            --output text | sort -r | awk 'NR==1 {print $2}')
-
-            echo "export AMI_ID=$AMI_ID" >> $BASH_ENV
-            source $BASH_ENV
       - run:
           name: Set timestamp for making sure Molecule would create unique AWS resources
           command: |
