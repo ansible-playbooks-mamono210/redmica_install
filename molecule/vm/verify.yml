@@ -1,0 +1,26 @@
+---
+- name: Verify
+  become: true
+  hosts: all
+
+  tasks:
+    - name: Check whether Redmica is installed
+      ansible.builtin.shell: |
+        ruby bin/about
+      changed_when: false
+      register: redmica_installed
+      args:
+        chdir: /var/lib/redmine
+
+    - name: Check OS version
+      ansible.builtin.command: cat /etc/redhat-release
+      register: os_version
+      changed_when: false
+
+    - name: Make sure Redmica is installed
+      ansible.builtin.debug:
+        var: redmica_installed
+
+    - name: Show OS version
+      ansible.builtin.debug:
+        var: os_version
