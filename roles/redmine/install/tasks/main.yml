@@ -18,6 +18,12 @@
       - google-noto-sans-cjk-jp-fonts
     state: present
 
+- name: Install Ghostscript
+  ansible.builtin.yum:
+    name:
+      - ghostscript
+    state: present
+
 - name: Install other prerequisites
   ansible.builtin.yum:
     name:
