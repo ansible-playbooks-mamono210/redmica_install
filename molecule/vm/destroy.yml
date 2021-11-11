@@ -5,18 +5,8 @@
   gather_facts: false
 
   tasks:
-    - name: set_fact molecule_platforms
-      set_fact:
-        molecule_platforms: "{{ molecule_yml.platforms }}"
-
     - name: Execute
       ansible.builtin.include_role:
         name: mamono210.molecule_test_ec2
       vars:
-        instance_type: "{{ molecule_platforms.0.instance_type }}"
-        keypair_name: "{{ molecule_platforms.0.keypair_name }}"
         resource_state: 'absent'
-        security_group_name: "{{ molecule_platforms.0.security_group_name }}"
-        tag_name: "{{ molecule_platforms.0.tag_name }}"
-        tag_created_by: "{{ molecule_platforms.0.tag_created_by }}"
-        vpc_subnet_id: "{{ molecule_platforms.0.vpc_subnet_id }}"
