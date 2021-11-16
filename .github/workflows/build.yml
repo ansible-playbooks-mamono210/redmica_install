@@ -4,38 +4,7 @@ on: [deployment, push]
 
 jobs:
   ansible-lint:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.9'
-
-      - name: Install ansible-lint
-        run: |
-          pip install "ansible-lint[community,yamllint]"
-
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Install galaxy roles
-        run: |
-          ansible-galaxy install -r roles/requirements.yml
-
-      - name: Execulte ansible-lint
-        run: |
-          ansible-lint
-
-      - name: Show ansible-lint version
-        run: |
-          pip list | grep ansible \
-          | GREP_COLORS='mt=01;34' egrep --color=always '[[:digit:]]' \
-          | GREP_COLORS='mt=01;34' egrep --color=always '\.' \
-          | GREP_COLORS='mt=01;33' egrep --color=always 'ansible.* '
-          ansible-lint --version
+    uses: github-actions-reusable-workflows/ansible-lint/.github/workflows/workflows.yml@main
 
   detect-secrets:
     runs-on: ubuntu-latest
