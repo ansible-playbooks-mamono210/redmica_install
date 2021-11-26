@@ -45,7 +45,7 @@ jobs:
   docker-centos8:
     uses: github-actions-reusable-workflows/molecule-docker/.github/workflows/workflows.yml@main
     with:
-      distro: centos8
+      molecule-image: ghcr.io/docker-hub-tm/ansible-test/centos8:latest
       molecule-scenario: docker
       pip-requirements-file: molecule/requirements/docker
 
