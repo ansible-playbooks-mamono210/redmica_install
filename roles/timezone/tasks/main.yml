@@ -1,4 +1,0 @@
----
-- name: Set timezone to Asia/Tokyo
-  community.general.timezone:
-    name: '{{ system_timezone }}'

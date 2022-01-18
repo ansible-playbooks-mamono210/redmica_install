@@ -5,6 +5,8 @@ roles:
     src: https://github.com/ansible-roles-mamono210/httpd_install.git
   - name: mamono210.ruby
     src: https://github.com/ansible-roles-mamono210/ruby.git
+  - name: mamono210.timezone
+    src: https://github.com/ansible-roles-mamono210/timezone.git
   - name: robertdebock.bootstrap
   - name: robertdebock.locale
   - name: robertdebock.reboot

@@ -11,7 +11,7 @@
       tags: selinux
     - role: robertdebock.locale
       tags: locale
-    - role: timezone
+    - role: mamono210.timezone
       tags: timezone
     - role: mamono210.httpd_install
       tags: httpd
