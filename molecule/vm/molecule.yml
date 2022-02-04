@@ -6,9 +6,9 @@ driver:
 platforms:
   - name: ${PLATFORM_NAME}
     ansible_user: centos
-    image_name: "centos8-*"
+    image_name: "centos-stream8-*"
     image_owner: ${AMI_OWNER_ID}
-    instance_type: t2.medium
+    instance_type: t4g.medium
     keypair_name: ${KEYPAIR_NAME}
     security_group_name: ${SECURITY_GROUP_NAME}
     security_group_rules:

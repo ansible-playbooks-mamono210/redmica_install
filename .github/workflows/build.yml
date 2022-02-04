@@ -42,10 +42,10 @@ jobs:
           | GREP_COLORS='mt=01;34' egrep --color=always '\.' \
           | GREP_COLORS='mt=01;33' egrep --color=always 'detect-secrets.* '
 
-  docker-centos8:
+  docker-centos-stream8:
     uses: github-actions-reusable-workflows/molecule-docker/.github/workflows/workflows.yml@main
     with:
-      molecule-image: ghcr.io/docker-hub-tm/ansible-test/centos8:latest
+      molecule-image: ghcr.io/docker-hub-tm/ansible-test/centos-stream8:latest
       molecule-scenario: docker
       pip-requirements-file: molecule/requirements/docker
 
