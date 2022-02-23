@@ -4,7 +4,7 @@ version: 2.1
 executors:
   molecule:
     docker:
-      - image: ghcr.io/docker-hub-tm/circleci-executors_molecule/molecule:latest
+      - image: ghcr.io/docker-hub-tm/circleci-executors_molecule/molecule:ec2
     resource_class: small
 
 jobs:
