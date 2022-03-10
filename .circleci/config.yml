@@ -2,14 +2,90 @@
 version: 2.1
 
 executors:
-  molecule:
+  ansible-lint:
+    docker:
+      - image: ghcr.io/docker-hub-tm/circleci-executors/ansible-lint:latest
+    resource_class: small
+  molecule-docker:
+    machine:
+      image: ubuntu-2004:202111-02
+    resource_class: medium
+  molecule-ec2:
     docker:
       - image: ghcr.io/docker-hub-tm/circleci-executors_molecule/molecule:ec2
     resource_class: small
+  yamllint:
+    docker:
+      - image: ghcr.io/docker-hub-tm/circleci-executors/yamllint:latest
+    resource_class: small
+  trailing-whitespace:
+    docker:
+      - image: ghcr.io/docker-hub-tm/circleci-executors/trailing-whitespace:latest
+    resource_class: small
 
 jobs:
-  build:
-    executor: molecule
+  ansible-lint:
+    executor: ansible-lint
+    steps:
+      - checkout
+      - run:
+          name: Install galaxy roles
+          command: |
+            if [ -f 'roles/requirements.yml' ]; then
+              ansible-galaxy install -r roles/requirements.yml
+            else
+              ansible-galaxy install git+${CIRCLE_REPOSITORY_URL},${CIRCLE_SHA1}
+            fi
+      - run:
+          name: Execulte Ansible-lint
+          command: ansible-lint
+      - run:
+          name: Show Ansible-lint version
+          command: |
+            pip list | grep ansible \
+            | GREP_COLORS='mt=01;34' egrep --color=always '[[:digit:]]' \
+            | GREP_COLORS='mt=01;34' egrep --color=always '\.' \
+            | GREP_COLORS='mt=01;33' egrep --color=always 'ansible.* '
+            ansible-lint --version
+  molecule-docker:
+    executor: molecule-docker
+    parameters:
+      checkout-path:
+        type: string
+      molecule-image:
+        type: string
+    steps:
+      - checkout:
+          path: << parameters.checkout-path >>
+      - run:
+          name: Install Molecule and dependencies
+          command: |
+            cd << parameters.checkout-path >>
+            pip3 install -r molecule/requirements/docker
+      - run:
+          name: Test with Molecule
+          command: |
+            cd << parameters.checkout-path >>
+            molecule test --scenario-name docker
+          environment:
+            PY_COLORS: '1'
+            ANSIBLE_FORCE_COLOR: '1'
+            MOLECULE_IMAGE: << parameters.molecule-image >>
+      - store_artifacts:
+          path: << parameters.checkout-path >>/molecule/default/files/screenshot.png
+          destination: screenshot.png
+      - run:
+          name: Show Ansible version
+          command: |
+            pip3 list | grep ansible \
+            | GREP_COLORS='mt=01;34' egrep --color=always '[[:digit:]]' \
+            | GREP_COLORS='mt=01;34' egrep --color=always '\.' \
+            | GREP_COLORS='mt=01;33' egrep --color=always 'ansible.* '
+      - run:
+          name: Show Molecule version
+          command: molecule --version
+  molecule-ec2:
+    executor: molecule-ec2
     steps:
       - checkout
       - run:
@@ -106,10 +182,49 @@ jobs:
       - run:
           name: Show Molecule version
           command: molecule --version
+  yamllint:
+    executor: yamllint
+    steps:
+      - checkout
+      - run:
+          name: Execute yamllint
+          command: yamllint *
+      - run:
+          name: Show yamllint version
+          command: |
+            yamllint --version \
+            | GREP_COLORS='mt=01;34' egrep --color=always '[[:digit:]]' \
+            | GREP_COLORS='mt=01;34' egrep --color=always '\.' \
+            | GREP_COLORS='mt=01;33' egrep --color=always 'yamllint.* '
+  trailing-whitespace:
+    executor: trailing-whitespace
+    steps:
+      - checkout
+      - run:
+          name: Execute trailing-whitespace
+          command: trailing-whitespace
 
 workflows:
   version: 2.1
   redmica-install:
     jobs:
-      - build:
+      - trailing-whitespace
+      - yamllint:
+          requires:
+            - trailing-whitespace
+      - ansible-lint:
+          requires:
+            - yamllint
+      - molecule-docker:
+          matrix:
+            parameters:
+              checkout-path:
+                - 'redmica_install'
+              molecule-image:
+                - 'ghcr.io/docker-hub-tm/ansible-test/centos-stream8:latest'
+          requires:
+            - ansible-lint
+      - molecule-ec2:
           context: aws-credentials
+          requires:
+            - ansible-lint

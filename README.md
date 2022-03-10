@@ -1,4 +1,3 @@
-[![](https://github.com/ansible-playbooks-mamono210/redmica_install/workflows/build/badge.svg)](https://github.com/ansible-playbooks-mamono210/redmica_install/actions?query=workflow%3Abuild)
 [![CircleCI](https://circleci.com/gh/ansible-playbooks-mamono210/redmica_install.svg?style=svg)](https://circleci.com/gh/ansible-playbooks-mamono210/redmica_install)
 
 
