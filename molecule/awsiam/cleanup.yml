@@ -6,7 +6,7 @@
   no_log: "{{ molecule_no_log }}"
   tasks:
     - name: set_fact molecule_platforms
-      set_fact:
+      ansible.builtin.set_fact:
         molecule_platforms: "{{ molecule_yml.platforms }}"
 
     - name: Execute
