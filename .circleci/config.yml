@@ -13,7 +13,7 @@ executors:
   molecule-ec2:
     docker:
       - image: ghcr.io/docker-hub-tm/circleci-executors_molecule/molecule:ec2
-    resource_class: small
+    resource_class: medium
   yamllint:
     docker:
       - image: ghcr.io/docker-hub-tm/circleci-executors/yamllint:latest
@@ -22,6 +22,9 @@ executors:
     docker:
       - image: ghcr.io/docker-hub-tm/circleci-executors/trailing-whitespace:latest
     resource_class: small
+
+orbs:
+  aws-cli: circleci/aws-cli@3.1.1
 
 jobs:
   ansible-lint:
@@ -88,33 +91,11 @@ jobs:
     executor: molecule-ec2
     steps:
       - checkout
-      - run:
-          name: Set environment variable with timestamp for making sure Molecule would create unique AWS resources
-          command: |
-            TIMESTAMP=$(date --date "9 hours" "+%Y%m%d_%H%M%S")
-            VAULE='molecule_wordpress_install'
-            AWSIAM_USER="molecule_redmica_install_${TIMESTAMP}"
-            AWSIAM_POLICY_NAME="molecule_redmica_install_${TIMESTAMP}"
-            echo "export AWSIAM_USER=$AWSIAM_USER" >> $BASH_ENV
-            echo "export AWSIAM_POLICY_NAME=$AWSIAM_POLICY_NAME" >> $BASH_ENV
-            source $BASH_ENV
-      - run:
-          name: Create AWS Access Key
-          command: |
-            molecule dependency --scenario-name awsiam
-            molecule converge --scenario-name awsiam
-          environment:
-            ANSIBLE_FORCE_COLOR: '1'
-            # AWS_ACCESS_KEY_ID_1: sotred in CircleCI environment variables
-            # AWS_DEFAULT_REGION: sotred in CircleCI environment variables
-            # AWS_SECRET_ACCESS_KEY_1: stored in CircleCI environment variables
-            # AWSIAM_USER: stored in CircleCI environment variables
-            # AWSIAM_POCLIY_NAME: stored in CircleCI environment variables
-            MOLECULE_VERBOSITY: 0
-            PROFILE_TASKS_SORT_ORDER: 'none'
-            PROFILE_TASKS_TASK_OUTPUT_LIMIT: '200'
-            PY_COLORS: '1'
-            TZ: 'Asia/Tokyo'
+      - aws-cli/setup:
+          profile-name: default
+          role-arn: ${AWS_ROLE_ARN}
+          role-session-name: circleci_ansible-playbook_redmica_install
+          session-duration: '3600'
       - run:
           name: Set timestamp for making sure Molecule would create unique AWS resources
           command: |
@@ -155,22 +136,7 @@ jobs:
             # SECURITY_GROUP_NAME: sotred in CircleCI environment variables
             # VPC_SUBNET_ID: sotred in CircleCI environment variables
             TZ: 'Asia/Tokyo'
-      - run:
-          name: Delete AWS Access Key
-          command: |
-            molecule cleanup --scenario-name awsiam
-          environment:
-            ANSIBLE_FORCE_COLOR: '1'
-            # AWS_ACCESS_KEY_ID_1: sotred in CircleCI environment variables
-            # AWS_DEFAULT_REGION: sotred in CircleCI environment variables
-            # AWS_SECRET_ACCESS_KEY_1: stored in CircleCI environment variables
-            # AWSIAM_USER: stored in CircleCI environment variables
-            # AWSIAM_POCLIY_NAME: stored in CircleCI environment variables
-            MOLECULE_VERBOSITY: 0
-            PROFILE_TASKS_SORT_ORDER: 'none'
-            PROFILE_TASKS_TASK_OUTPUT_LIMIT: '200'
-            PY_COLORS: '1'
-            TZ: 'Asia/Tokyo'
+          no_output_timeout: 30m
       - run:
           name: Show Ansible version
           command: |
@@ -225,6 +191,6 @@ workflows:
           requires:
             - ansible-lint
       - molecule-ec2:
-          context: aws-credentials
+          context: aws_oidc
           requires:
             - ansible-lint
