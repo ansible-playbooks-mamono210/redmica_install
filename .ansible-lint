@@ -1,7 +1,5 @@
 ---
-exclude_paths:
-  - molecule/vm/create.yml
-  - molecule/vm/destroy.yml
 parseable: true
-skip_list:
-  - '106'
+warn_list:
+  - experimental
+  - var-spacing
