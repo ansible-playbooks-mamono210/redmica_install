@@ -13,7 +13,7 @@ provisioner:
   name: ansible
   config_options:
     defaults:
-      callback_whitelist: ansible.posix.profile_tasks
+      callbacks_enabled: ansible.posix.profile_tasks
   playbooks:
     converge: ../../install.yml
   log: false
