@@ -62,5 +62,5 @@
     src: redmine.conf
     dest: "/etc/httpd/conf.d/{{ httpd_conf_confd }}"
     mode: 0755
-  notify: restart Apache
+  notify: Restart Apache
   when: passenger_installed is failed

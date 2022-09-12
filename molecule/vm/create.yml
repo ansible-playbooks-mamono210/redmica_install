@@ -5,7 +5,7 @@
   gather_facts: false
 
   tasks:
-    - name: set_fact molecule_platforms
+    - name: Set variables of molecule.yml to molecule_platforms
       ansible.builtin.set_fact:
         molecule_platforms: "{{ molecule_yml.platforms }}"
 

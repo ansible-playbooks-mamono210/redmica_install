@@ -3,3 +3,4 @@ parseable: true
 warn_list:
   - experimental
   - var-spacing
+  - name[casing]
