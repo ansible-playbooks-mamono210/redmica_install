@@ -4,7 +4,7 @@ version: 2.1
 executors:
   ansible-lint:
     docker:
-      - image: ghcr.io/docker-hub-tm/circleci-executors/ansible-lint:latest
+      - image: ghcr.io/docker-images-mamono210/circleci-executors/ansible-lint:latest
     resource_class: small
   molecule-docker:
     machine:
@@ -12,15 +12,15 @@ executors:
     resource_class: medium
   molecule-ec2:
     docker:
-      - image: ghcr.io/docker-hub-tm/circleci-executors_molecule/molecule:ec2
+      - image: ghcr.io/docker-images-mamono210/circleci-executors_molecule/molecule:ec2
     resource_class: medium
   yamllint:
     docker:
-      - image: ghcr.io/docker-hub-tm/circleci-executors/yamllint:latest
+      - image: ghcr.io/docker-images-mamono210/circleci-executors/yamllint:latest
     resource_class: small
   trailing-whitespace:
     docker:
-      - image: ghcr.io/docker-hub-tm/circleci-executors/trailing-whitespace:latest
+      - image: ghcr.io/docker-images-mamono210/circleci-executors/trailing-whitespace:latest
     resource_class: small
 
 orbs:
@@ -190,7 +190,7 @@ workflows:
               checkout-path:
                 - 'redmica_install'
               molecule-image:
-                - 'ghcr.io/docker-hub-tm/ansible-test/centos-stream8:latest'
+                - 'ghcr.io/docker-images-mamono210/ansible-test/centos-stream8:latest'
           requires:
             - ansible-lint
       - molecule-ec2:
