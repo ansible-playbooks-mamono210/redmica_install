@@ -45,7 +45,7 @@
     version: '{{ redmica_git_version }}'
     dest: '{{ redmine_dir }}'
 
-- name: "Create database.yml under {{ redmine_dir }}/config/"
+- name: Create database.yml under Redmine installed directory
   ansible.builtin.template:
     src: database.yml
     dest: "{{ redmine_dir }}/config/database.yml"
@@ -54,7 +54,7 @@
   register:
     result_database_yml
 
-- name: "Create configuration.yml under {{ redmine_dir }}/config"
+- name: Create configuration.yml under Redmine installed directory
   ansible.builtin.template:
     src: configuration.yml
     dest: "{{ redmine_dir }}/config/configuration.yml"
