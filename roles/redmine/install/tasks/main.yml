@@ -5,7 +5,8 @@
     state: present
 
 - name: Enable CentOS PowerTools repository
-  ansible.builtin.command: dnf config-manager --set-enabled powertools warn=no
+  ansible.builtin.command:
+    cmd: dnf config-manager --set-enabled powertools
   when:
     - ansible_distribution == "CentOS"
     - ansible_distribution_major_version == "8"
