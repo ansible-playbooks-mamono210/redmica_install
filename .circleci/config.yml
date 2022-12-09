@@ -112,14 +112,6 @@ jobs:
             echo "export TAG_NAME=${VALUE}_${TIMESTAMP}" >> $BASH_ENV
             source $BASH_ENV
       - run:
-          name: Install required Ansible Collections and roles
-          command: |
-            ansible-galaxy install -r molecule/vm/requirements.yml
-      - run:
-          name: Create galaxy dependencies file in 'molecule/vm/'
-          command: |
-            cp roles/requirements.yml molecule/vm/requirements.yml
-      - run:
           name: Test with molecule
           command: |
             molecule test --scenario-name vm
