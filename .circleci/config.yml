@@ -10,10 +10,6 @@ executors:
     machine:
       image: ubuntu-2004:202111-02
     resource_class: medium
-  molecule-ec2:
-    docker:
-      - image: ghcr.io/docker-images-mamono210/circleci-executors_molecule/molecule:ec2
-    resource_class: medium
   yamllint:
     docker:
       - image: ghcr.io/docker-images-mamono210/circleci-executors/yamllint:latest
@@ -25,6 +21,7 @@ executors:
 
 orbs:
   aws-cli: circleci/aws-cli@3.1.1
+  molecule-ec2: orbss/molecule-ec2@0.0.4
 
 jobs:
   ansible-lint:
@@ -90,58 +87,21 @@ jobs:
           name: Show Molecule version
           command: molecule --version
   molecule-ec2:
-    executor: molecule-ec2
+    executor: molecule-ec2/default
     steps:
       - checkout
       - aws-cli/setup:
           profile-name: default
           role-arn: ${AWS_ROLE_ARN}
-          role-session-name: circleci_ansible-playbook_redmica_install
+          role-session-name: molecule_redmica_install
           session-duration: '3600'
-      - run:
-          name: Set timestamp for making sure Molecule would create unique AWS resources
-          command: |
-            TIMESTAMP=$(date --date "9 hours" "+%Y%m%d_%H:%M:%S")
-            VALUE='redmica_install_molecule'
-            AUTHOR_EMAIL=$(git show -s --format='%ae' ${CIRCLE_SHA1})
-
-            echo "export CREATED_BY=${AUTHOR_EMAIL}" >> $BASH_ENV
-            echo "export KEYPAIR_NAME=${VALUE}_${TIMESTAMP}" >> $BASH_ENV
-            echo "export PLATFORM_NAME=${VALUE}_${TIMESTAMP}" >> $BASH_ENV
-            echo "export SECURITY_GROUP_NAME=${VALUE}_${TIMESTAMP}" >> $BASH_ENV
-            echo "export TAG_NAME=${VALUE}_${TIMESTAMP}" >> $BASH_ENV
-            source $BASH_ENV
-      - run:
-          name: Test with molecule
-          command: |
-            molecule test --scenario-name vm
-          environment:
-            ANSIBLE_FORCE_COLOR: '1'
-            ANSIBLE_TASK_TIMEOUT: '600'
-            # AMI_ID: sotred in system environment variables
-            # AWS_DEFAULT_REGION: sotred in CircleCI environment variables
-            # CREATED_BY: stored in CircleCI environment variables
-            # EC2_REGION: stored in CircleCI environment variables
-            # KEYPAIR_NAME: sotred in CircleCI environment variables
-            # PLATFORM_NAME: sotred in CircleCI environment variables
-            PROFILE_TASKS_SORT_ORDER: 'none'
-            PROFILE_TASKS_TASK_OUTPUT_LIMIT: '200'
-            PY_COLORS: '1'
-            # SECURITY_GROUP_NAME: sotred in CircleCI environment variables
-            # VPC_SUBNET_ID: sotred in CircleCI environment variables
-            TZ: 'Asia/Tokyo'
-          no_output_timeout: 15m
-      - run:
-          name: Show Ansible version
-          command: |
-            pip list | grep ansible \
-            | GREP_COLORS='mt=01;34' egrep --color=always '[[:digit:]]' \
-            | GREP_COLORS='mt=01;34' egrep --color=always '\.' \
-            | GREP_COLORS='mt=01;33' egrep --color=always 'ansible.* '
-            ansible --version
-      - run:
-          name: Show Molecule version
-          command: molecule --version
+      - molecule-ec2/execute:
+          aws-ami-name: "centos-stream8-1*"
+          aws-ami-owner-id: "808683561341"
+          aws-resource-name: "molecule_redmica_install"
+          aws-vpc-subnet-id: "subnet-022a704b3061b8b39"
+          circleci-timeout: "15m"
+          molecule-scenario-name: "vm"
   yamllint:
     executor: yamllint
     steps:
