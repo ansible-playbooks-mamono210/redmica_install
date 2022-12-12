@@ -2,10 +2,6 @@
 version: 2.1
 
 executors:
-  ansible-lint:
-    docker:
-      - image: ghcr.io/docker-images-mamono210/circleci-executors/ansible-lint:latest
-    resource_class: small
   molecule-docker:
     machine:
       image: ubuntu-2004:202111-02
@@ -16,34 +12,18 @@ executors:
     resource_class: small
 
 orbs:
+  ansible-lint: orbss/ansible-lint@0.0.3
   aws-cli: circleci/aws-cli@3.1.1
   molecule-ec2: orbss/molecule-ec2@0.0.4
   yamllint: orbss/yamllint@0.0.4
 
 jobs:
   ansible-lint:
-    executor: ansible-lint
+    executor: ansible-lint/default
     steps:
       - checkout
-      - run:
-          name: Install galaxy roles
-          command: |
-            if [ -f 'roles/requirements.yml' ]; then
-              ansible-galaxy install -r roles/requirements.yml
-            else
-              ansible-galaxy install git+${CIRCLE_REPOSITORY_URL},${CIRCLE_SHA1}
-            fi
-      - run:
-          name: Execulte Ansible-lint
-          command: ansible-lint
-      - run:
-          name: Show Ansible-lint version
-          command: |
-            pip list | grep ansible \
-            | GREP_COLORS='mt=01;34' egrep --color=always '[[:digit:]]' \
-            | GREP_COLORS='mt=01;34' egrep --color=always '\.' \
-            | GREP_COLORS='mt=01;33' egrep --color=always 'ansible.* '
-            ansible-lint --version
+      - ansible-lint/execute:
+          molecule-playbook-test: true
   molecule-docker:
     executor: molecule-docker
     parameters:
