@@ -2,7 +2,7 @@
 dependency:
   name: galaxy
 driver:
-  name: ec2
+  name: delegated
 platforms:
   - name: ${PLATFORM_NAME}
     ansible_user: centos
