@@ -4,3 +4,5 @@ warn_list:
   - experimental
   - var-spacing
   - name[casing]
+  - role-name[path]
+  - no-changed-when
