@@ -2,10 +2,6 @@
 version: 2.1
 
 executors:
-  molecule-docker:
-    machine:
-      image: ubuntu-2004:202111-02
-    resource_class: medium
   trailing-whitespace:
     docker:
       - image: ghcr.io/docker-images-mamono210/circleci-executors/trailing-whitespace:latest
@@ -24,45 +20,6 @@ jobs:
       - checkout
       - ansible-lint/execute:
           molecule-playbook-test: true
-  molecule-docker:
-    executor: molecule-docker
-    parameters:
-      checkout-path:
-        type: string
-      molecule-image:
-        type: string
-    steps:
-      - checkout:
-          path: << parameters.checkout-path >>
-      - run:
-          name: Install Molecule and dependencies
-          command: |
-            cd << parameters.checkout-path >>
-            pip3 install -r molecule/requirements/docker
-      - run:
-          name: Test with Molecule
-          command: |
-            cd << parameters.checkout-path >>
-            molecule test --scenario-name docker
-          environment:
-            ANSIBLE_FORCE_COLOR: '1'
-            ANSIBLE_TASK_TIMEOUT: '600'
-            MOLECULE_IMAGE: << parameters.molecule-image >>
-            PY_COLORS: '1'
-          no_output_timeout: 15m
-      - store_artifacts:
-          path: << parameters.checkout-path >>/molecule/default/files/screenshot.png
-          destination: screenshot.png
-      - run:
-          name: Show Ansible version
-          command: |
-            pip3 list | grep ansible \
-            | GREP_COLORS='mt=01;34' egrep --color=always '[[:digit:]]' \
-            | GREP_COLORS='mt=01;34' egrep --color=always '\.' \
-            | GREP_COLORS='mt=01;33' egrep --color=always 'ansible.* '
-      - run:
-          name: Show Molecule version
-          command: molecule --version
   molecule-ec2:
     executor: molecule-ec2/default
     steps:
@@ -78,7 +35,6 @@ jobs:
           aws-resource-name: "molecule_redmica_install"
           aws-vpc-subnet-id: "subnet-022a704b3061b8b39"
           circleci-timeout: "15m"
-          molecule-scenario-name: "vm"
   yamllint:
     executor: yamllint/default
     steps:
@@ -103,15 +59,6 @@ workflows:
       - ansible-lint:
           requires:
             - yamllint
-      - molecule-docker:
-          matrix:
-            parameters:
-              checkout-path:
-                - 'redmica_install'
-              molecule-image:
-                - 'ghcr.io/docker-images-mamono210/ansible-test/centos-stream8:latest'
-          requires:
-            - ansible-lint
       - molecule-ec2:
           context: AWS_OPENID_CONNECT_TOKENS
           requires:
