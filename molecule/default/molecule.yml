@@ -5,7 +5,6 @@ driver:
   name: delegated
 platforms:
   - name: ${PLATFORM_NAME}
-    ansible_user: centos
     image_name: ${AMI_NAME}
     image_owner: ${AMI_OWNER_ID}
     instance_type: t2.medium
@@ -26,7 +25,7 @@ platforms:
         to_port: 0
         cidr_ip: '0.0.0.0/0'
     ssh_port: 22
-    ssh_user: centos
+    ssh_user: ${ANSIBLE_USER}
     tag_name: ${TAG_NAME}
     tag_created_by: ${CREATED_BY}
     vpc_subnet_id: ${VPC_SUBNET_ID}
@@ -36,7 +35,7 @@ provisioner:
     defaults:
       callbacks_enabled: ansible.posix.profile_tasks
   connection_options:
-    ansible_user: centos
+    ansible_user: ${ANSIBLE_USER}
     passenger_swap: true
   log: false
   playbooks:

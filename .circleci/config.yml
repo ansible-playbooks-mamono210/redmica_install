@@ -10,7 +10,7 @@ executors:
 orbs:
   ansible-lint: orbss/ansible-lint@0.0.3
   aws-cli: circleci/aws-cli@3.1.1
-  molecule-ec2: orbss/molecule-ec2@0.0.4
+  molecule-ec2: orbss/molecule-ec2@0.0.7
   yamllint: orbss/yamllint@0.0.4
 
 jobs:
@@ -22,19 +22,40 @@ jobs:
           molecule-playbook-test: true
   molecule-ec2:
     executor: molecule-ec2/default
+    parameters:
+      ansible-user:
+        type: string
+      aws-ami-name:
+        type: string
+      aws-ami-owner-id:
+        type: string
+      aws-instance-type:
+        type: string
+      aws-resource-name:
+        type: string
+      aws-vpc-subnet-id:
+        type: string
+      circleci-timeout:
+        type: string
+      molecule-scenario-name:
+        type: string
     steps:
       - checkout
+      - aws-cli/setup
       - aws-cli/setup:
           profile-name: default
           role-arn: ${AWS_ROLE_ARN}
-          role-session-name: molecule_redmica_install
-          session-duration: '3600'
+          role-session-name: << parameters.aws-resource-name >>
+          session-duration: '2100'
       - molecule-ec2/execute:
-          aws-ami-name: "centos-stream8-1*"
-          aws-ami-owner-id: "808683561341"
-          aws-resource-name: "molecule_redmica_install"
-          aws-vpc-subnet-id: "subnet-022a704b3061b8b39"
-          circleci-timeout: "15m"
+          ansible-user: << parameters.ansible-user >>
+          aws-ami-name: << parameters.aws-ami-name >>
+          aws-ami-owner-id: << parameters.aws-ami-owner-id >>
+          aws-instance-type: << parameters.aws-instance-type >>
+          aws-resource-name: << parameters.aws-resource-name >>
+          aws-vpc-subnet-id: << parameters.aws-vpc-subnet-id >>
+          circleci-timeout: << parameters.circleci-timeout >>
+          molecule-scenario-name: << parameters.molecule-scenario-name >>
   yamllint:
     executor: yamllint/default
     steps:
@@ -60,6 +81,14 @@ workflows:
           requires:
             - yamllint
       - molecule-ec2:
+          ansible-user: centos
+          aws-ami-name: 'centos-stream8-1*'
+          aws-ami-owner-id: '808683561341'
+          aws-instance-type: 't2.medium'
+          aws-resource-name: 'circleci_ansible-playbook_redmine_install_centos-stream8'
+          aws-vpc-subnet-id: 'subnet-022a704b3061b8b39'
+          circleci-timeout: '20m'
+          molecule-scenario-name: 'default'
           context: AWS_OPENID_CONNECT_TOKENS
           requires:
             - ansible-lint
