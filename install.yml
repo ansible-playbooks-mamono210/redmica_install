@@ -23,6 +23,10 @@
     - role: redmine/create-pg-account-and-database
       tags: database
     - role: redmine/install
-      tags: redmine
-    - role: passenger
+      tags: redmine_install
+    - role: mamono210.swapfile
+      tags: swapfile
+    - role: mamono210.passenger
       tags: passenger
+    - role: redmine/passenger
+      tags: redmine_passenger

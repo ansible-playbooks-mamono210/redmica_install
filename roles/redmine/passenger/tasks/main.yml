@@ -1,0 +1,15 @@
+---
+- name: Register results of showing configuration snippet command to variable
+  ansible.builtin.command: passenger-install-apache2-module --snippet
+  environment:
+    PATH: "/usr/local/bin:{{ ansible_env.PATH }}"
+  register: passenger_snippet_vars
+  when: passenger_installed is failed
+
+- name: Create redmine.conf
+  ansible.builtin.template:
+    src: redmine.conf
+    dest: "/etc/httpd/conf.d/{{ httpd_conf_confd }}"
+    mode: 0755
+  notify: Restart Apache
+  when: passenger_installed is failed
