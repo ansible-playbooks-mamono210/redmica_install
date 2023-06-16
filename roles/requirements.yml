@@ -1,6 +1,8 @@
 ---
 roles:
   - name: geerlingguy.repo-epel
+  - name: mamono210.locale
+    src: https://github.com/ansible-roles-mamono210/locale.git
   - name: mamono210.httpd_install
     src: https://github.com/ansible-roles-mamono210/httpd_install.git
   - name: mamono210.passenger

@@ -10,7 +10,7 @@
       tags: repo-epel
     - role: robertdebock.selinux
       tags: selinux
-    - role: robertdebock.locale
+    - role: mamono210.locale
       tags: locale
     - role: mamono210.timezone
       tags: timezone
