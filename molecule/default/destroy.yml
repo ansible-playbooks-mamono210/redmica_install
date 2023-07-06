@@ -9,4 +9,4 @@
       ansible.builtin.include_role:
         name: mamono210.molecule_test_ec2
       vars:
-        resource_state: 'absent'
+        molecule_test_ec2_resource_state: 'absent'

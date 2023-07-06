@@ -5,20 +5,8 @@
   gather_facts: false
 
   tasks:
-    - name: Set variables of molecule.yml to molecule_platforms
-      ansible.builtin.set_fact:
-        molecule_platforms: "{{ molecule_yml.platforms }}"
-
     - name: Execute
       ansible.builtin.include_role:
         name: mamono210.molecule_test_ec2
       vars:
-        image_name: "{{ molecule_platforms.0.image_name }}"
-        image_owner: "{{ molecule_platforms.0.image_owner }}"
-        instance_type: "{{ molecule_platforms.0.instance_type }}"
-        keypair_name: "{{ molecule_platforms.0.keypair_name }}"
-        resource_state: 'present'
-        security_group_name: "{{ molecule_platforms.0.security_group_name }}"
-        tag_name: "{{ molecule_platforms.0.tag_name }}"
-        tag_created_by: "{{ molecule_platforms.0.tag_created_by }}"
-        vpc_subnet_id: "{{ molecule_platforms.0.vpc_subnet_id }}"
+        molecule_test_ec2_resource_state: 'present'

@@ -71,7 +71,7 @@
 - name: Create PostgreSQL user
   become: True
   become_user: postgres
-  become_method: sudo
+  become_method: ansible.builtin.sudo
   community.general.postgresql_user:
     name: redmine
     password: '{{ db_password }}'
@@ -80,7 +80,7 @@
 - name: Create database
   become: True
   become_user: postgres
-  become_method: sudo
+  become_method: ansible.builtin.sudo
   community.general.postgresql_db:
     name: redmine
     encoding: UTF-8
