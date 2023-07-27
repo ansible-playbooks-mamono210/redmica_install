@@ -7,6 +7,6 @@
   tasks:
     - name: Execute
       ansible.builtin.include_role:
-        name: mamono210.molecule_test_ec2
+        name: mamono210.molecule_ec2_driver
       vars:
-        molecule_test_ec2_resource_state: 'present'
+        molecule_ec2_driver_resource_state: 'present'
