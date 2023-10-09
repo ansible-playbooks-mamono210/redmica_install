@@ -30,6 +30,7 @@ provisioner:
   config_options:
     defaults:
       callbacks_enabled: ansible.posix.profile_tasks
+      timeout: 300
   connection_options:
     ansible_user: ${ANSIBLE_USER}
     passenger_swap: true
