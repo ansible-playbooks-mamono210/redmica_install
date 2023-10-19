@@ -10,7 +10,7 @@ executors:
 orbs:
   ansible-lint: orbss/ansible-lint@0.0.3
   aws-cli: circleci/aws-cli@3.1.1
-  molecule-ec2: orbss/molecule-ec2@0.0.8
+  molecule-ec2: orbss/molecule-ec2@0.0.9
   yamllint: orbss/yamllint@0.0.4
 
 jobs:
