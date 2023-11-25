@@ -7,6 +7,8 @@ roles:
     src: https://github.com/ansible-roles-mamono210/httpd_install.git
   - name: mamono210.passenger
     src: https://github.com/ansible-roles-mamono210/passenger.git
+  - name: mamono210.redmine_plugins
+    src: https://github.com/ansible-roles-mamono210/redmine_plugins.git
   - name: mamono210.ruby
     src: https://github.com/ansible-roles-mamono210/ruby.git
   - name: mamono210.swapfile
