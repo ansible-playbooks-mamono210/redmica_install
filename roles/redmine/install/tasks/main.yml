@@ -33,6 +33,11 @@
       - which
     state: present
 
+- name: Install libyaml-devel
+  ansible.builtin.dnf:
+    name: libyaml-devel
+    state: present
+
 - name: Install bundler with gem
   community.general.gem:
     name: bundler
