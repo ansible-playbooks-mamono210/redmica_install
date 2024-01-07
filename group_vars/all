@@ -13,11 +13,11 @@ system_timezone: Asia/Tokyo
 # ----------------------------------------------------------------------
 # データベース情報 (変更推奨)
 #----------------------------------------------------
-db_host: localhost
-db_name: redmine
-db_password: password
-db_port: 5432
-db_user: redmine
+redmine_db_host: localhost
+redmine_db_name: redmine
+redmine_db_password: password
+redmine_db_port: 5432
+redmine_db_user: redmine
 # ----------------------------------------------------------------------
 
 #----------------------------------------------------

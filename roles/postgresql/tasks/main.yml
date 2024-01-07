@@ -1,7 +1,0 @@
----
-- name: Install PostgreSQL
-  ansible.builtin.package:
-    name:
-      - postgresql-devel
-      - postgresql-server
-    state: present

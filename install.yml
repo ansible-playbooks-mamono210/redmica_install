@@ -18,11 +18,11 @@
       tags: httpd
     - role: mamono210.ruby
       tags: ruby
-    - role: postgresql
+    - role: mamono210.postgresql
       tags: postgresql
     - role: redmine/create-pg-account-and-database
       tags: database
-    - role: redmine/install
+    - role: mamono210.redmine_install
       tags: redmine_install
     - role: mamono210.swapfile
       tags: swapfile
