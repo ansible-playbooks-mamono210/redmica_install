@@ -1,7 +1,7 @@
 [![CircleCI](https://circleci.com/gh/ansible-playbooks-mamono210/redmica_install.svg?style=svg)](https://circleci.com/gh/ansible-playbooks-mamono210/redmica_install)
 
 
-This playbook installs Redmica on CentOS Stream 8.
+This playbook installs Redmica on CentOS Stream 9.
 
 ## Install Redmica
 
