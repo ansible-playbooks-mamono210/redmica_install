@@ -24,6 +24,12 @@ platforms:
     ssh_user: ${ANSIBLE_USER}
     tag_name: ${TAG_NAME}
     tag_created_by: ${CREATED_BY}
+    volumes:
+      - device_name: /dev/sda1
+        ebs:
+          delete_on_termination: yes
+          volume_size: 10
+          volume_type: 'gp3'
     vpc_subnet_id: ${VPC_SUBNET_ID}
 provisioner:
   name: ansible
