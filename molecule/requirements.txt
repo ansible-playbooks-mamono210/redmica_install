@@ -1,0 +1,7 @@
+ansible
+boto
+boto3
+docker
+molecule
+requests
+selenium

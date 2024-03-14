@@ -5,6 +5,14 @@
   gather_facts: false
 
   tasks:
+    - name: Setup Selenium container
+      community.docker.docker_container:
+        name: selenium
+        image: selenium/standalone-firefox:latest
+        ports:
+          - '4444:4444'
+        state: started
+
     - name: Execute
       ansible.builtin.include_role:
         name: mamono210.molecule_ec2_driver

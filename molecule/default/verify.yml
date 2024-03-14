@@ -4,6 +4,35 @@
   hosts: all
 
   tasks:
+    - name: Gather facts
+      ansible.builtin.setup:
+      register: results
+      delegate_to: localhost
+
+    - name: Populate instance config
+      ansible.builtin.set_fact:
+        instance_conf: "{{ lookup('file', molecule_instance_config) | from_yaml }}"
+
+    - name: Set fact for Public IP
+      ansible.builtin.set_fact:
+        public_ip: "{{ item.address }}"
+      with_items: "{{ instance_conf }}"
+
+    - name: Write Public IP to a file
+      ansible.builtin.copy:
+        content: "{{ public_ip }}"
+        dest: /tmp/ip_address.txt
+        mode: preserve
+      delegate_to: localhost
+
+    - name: Execute selenium
+      ansible.builtin.command:
+        cmd: "{{ results.ansible_facts.ansible_python.executable }} screenshot.py"
+      args:
+        chdir: files
+      changed_when: false
+      delegate_to: localhost
+
     - name: Check whether Redmica is installed
       ansible.builtin.shell: |
         ruby bin/about
