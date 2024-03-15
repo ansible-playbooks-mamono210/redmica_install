@@ -10,6 +10,7 @@ executors:
 orbs:
   ansible-lint: orbss/ansible-lint@0.0.3
   aws-cli: circleci/aws-cli@3.1.1
+  molecule-ec2: orbss/molecule-ec2@0.0.9
   yamllint: orbss/yamllint@0.0.4
 
 jobs:
@@ -56,45 +57,18 @@ jobs:
           command: |
             pip3 install -r molecule/requirements.txt
       - run:
-          name: Set timestamp for making sure Molecule would create unique AWS resources
-          command: |
-            TIMESTAMP=$(date --date "9 hours" "+%Y%m%d_%H:%M:%S")
-            VALUE="<< parameters.aws-resource-name >>"
-            AUTHOR_EMAIL=$(git show -s --format='%ae' ${CIRCLE_SHA1})
-
-            echo "export CREATED_BY=${AUTHOR_EMAIL}" >> $BASH_ENV
-            echo "export KEYPAIR_NAME=${VALUE}_${TIMESTAMP}" >> $BASH_ENV
-            echo "export PLATFORM_NAME=${VALUE}_${TIMESTAMP}" >> $BASH_ENV
-            echo "export SECURITY_GROUP_NAME=${VALUE}_${TIMESTAMP}" >> $BASH_ENV
-            echo "export TAG_NAME=${VALUE}_${TIMESTAMP}" >> $BASH_ENV
-            source $BASH_ENV
-      - run:
-          name: Show Ansible version
-          command: |
-            pip3 list | grep ansible \
-            | GREP_COLORS='mt=01;34' egrep --color=always '[[:digit:]]' \
-            | GREP_COLORS='mt=01;34' egrep --color=always '\.' \
-            | GREP_COLORS='mt=01;33' egrep --color=always 'ansible.* '
-      - run:
-          name: Show Molecule version
-          command: molecule --version
-      - run:
           name: Install required Ansible roles
           command: |
             ansible-galaxy install -r molecule/default/requirements.yml
-      - run:
-          name: Test with Molecule
-          command: |
-            molecule test --scenario-name << parameters.molecule-scenario-name >>
-          environment:
-            ANSIBLE_FORCE_COLOR: '1'
-            ANSIBLE_USER: << parameters.ansible-user >>
-            AMI_NAME: << parameters.aws-ami-name >>
-            AMI_OWNER_ID: << parameters.aws-ami-owner-id >>
-            INSTANCE_TYPE: << parameters.aws-instance-type >>
-            PY_COLORS: '1'
-            VPC_SUBNET_ID: << parameters.aws-vpc-subnet-id >>
-          no_output_timeout: << parameters.circleci-timeout >>
+      - molecule-ec2/execute:
+          ansible-user: << parameters.ansible-user >>
+          aws-ami-name: << parameters.aws-ami-name >>
+          aws-ami-owner-id: << parameters.aws-ami-owner-id >>
+          aws-instance-type: << parameters.aws-instance-type >>
+          aws-resource-name: << parameters.aws-resource-name >>
+          aws-vpc-subnet-id: << parameters.aws-vpc-subnet-id >>
+          circleci-timeout: << parameters.circleci-timeout >>
+          molecule-scenario-name: << parameters.molecule-scenario-name >>
       - store_artifacts:
           path: molecule/<< parameters.molecule-scenario-name >>/files/screenshot.png
           destination: screenshot.<< parameters.molecule-scenario-name >>.png
