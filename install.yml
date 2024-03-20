@@ -16,6 +16,10 @@
       tags: timezone
     - role: mamono210.httpd_install
       tags: httpd
+    - role: mamono210.goaccess_install
+      tags: goaccess_install
+    - role: mamono210.goaccess_systemd
+      tags: goaccess_systemd
     - role: mamono210.ruby
       tags: ruby
     - role: mamono210.postgresql

@@ -41,6 +41,11 @@
       args:
         chdir: /var/lib/redmine
 
+    - name: Check whether GoAccess is installed
+      ansible.builtin.command: goaccess --version
+      register: goaccess_install
+      changed_when: false
+
     - name: Check OS version
       ansible.builtin.command: cat /etc/redhat-release
       register: os_version
@@ -49,6 +54,10 @@
     - name: Make sure Redmica is installed
       ansible.builtin.debug:
         var: redmica_installed
+
+    - name: Make sure GoAccess is installed
+      ansible.builtin.debug:
+        var: goaccess_install
 
     - name: Show OS version
       ansible.builtin.debug:
