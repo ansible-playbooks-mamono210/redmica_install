@@ -1,8 +1,9 @@
 ---
-parseable: true
 warn_list:
   - experimental
   - var-spacing
   - name[casing]
+skip_list:
+  - var-naming[no-role-prefix]
   - role-name[path]
   - no-changed-when
