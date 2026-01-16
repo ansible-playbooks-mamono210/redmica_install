@@ -34,3 +34,5 @@
       tags: passenger
     - role: redmine/passenger
       tags: redmine_passenger
+    - role: mamono210.redmine_themes
+      tags: redmine_themes

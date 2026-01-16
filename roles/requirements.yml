@@ -17,6 +17,8 @@ roles:
     src: https://github.com/ansible-roles-mamono210/redmine_install.git
   - name: mamono210.redmine_plugins
     src: https://github.com/ansible-roles-mamono210/redmine_plugins.git
+  - name: mamono210.redmine_themes
+    src: https://github.com/ansible-roles-mamono210/redmine_themes.git
   - name: mamono210.ruby
     src: https://github.com/ansible-roles-mamono210/ruby.git
   - name: mamono210.swapfile
