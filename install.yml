@@ -36,3 +36,5 @@
       tags: redmine_passenger
     - role: mamono210.redmine_themes
       tags: redmine_themes
+    - role: mamono210.redmine_facts
+      tags: redmine_facts

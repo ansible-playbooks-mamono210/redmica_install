@@ -13,6 +13,8 @@ roles:
     src: https://github.com/ansible-roles-mamono210/passenger.git
   - name: mamono210.postgresql
     src: https://github.com/ansible-roles-mamono210/postgresql.git
+  - name: mamono210.redmine_facts
+    src: https://github.com/ansible-roles-mamono210/redmine_facts.git
   - name: mamono210.redmine_install
     src: https://github.com/ansible-roles-mamono210/redmine_install.git
   - name: mamono210.redmine_plugins
