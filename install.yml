@@ -20,8 +20,8 @@
       tags: goaccess_install
     - role: mamono210.goaccess_systemd
       tags: goaccess_systemd
-    - role: mamono210.ruby
-      tags: ruby
+    - role: mamono210.ruby_install
+      tags: ruby_install
     - role: mamono210.postgresql
       tags: postgresql
     - role: redmine/create-pg-account-and-database
