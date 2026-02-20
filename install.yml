@@ -26,6 +26,8 @@
       tags: postgresql
     - role: redmine/create-pg-account-and-database
       tags: database
+    - role: mamono210.git
+      tags: git
     - role: mamono210.redmine_install
       tags: redmine_install
     - role: mamono210.swapfile

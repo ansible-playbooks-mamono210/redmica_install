@@ -1,6 +1,8 @@
 ---
 roles:
   - name: geerlingguy.repo-epel
+  - name: mamono210.git
+    src: https://github.com/ansible-roles-mamono210/git.git
   - name: mamono210.goaccess_install
     src: https://github.com/ansible-roles-mamono210/goaccess_install.git
   - name: mamono210.goaccess_systemd
