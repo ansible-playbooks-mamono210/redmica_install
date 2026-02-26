@@ -2,6 +2,12 @@
 version: 2.1
 
 executors:
+  molecule-with-selenium:
+    docker:
+      - image: ghcr.io/docker-images-mamono210/circleci-executors/molecule-default:latest
+      - image: selenium/standalone-firefox:latest
+        name: selenium
+    resource_class: small
   trailing-whitespace:
     docker:
       - image: ghcr.io/docker-images-mamono210/circleci-executors/trailing-whitespace:latest
@@ -21,9 +27,7 @@ jobs:
       - ansible-lint/execute:
           molecule-playbook-test: true
   molecule:
-    machine:
-      image: ubuntu-2204:2023.10.1
-    resource_class: medium
+    executor: molecule-with-selenium
     parameters:
       ansible-user:
         type: string
@@ -53,13 +57,37 @@ jobs:
           role-session-name: << parameters.aws-resource-name >>
           session-duration: << parameters.aws-session-duration >>
       - run:
-          name: Install Molecule and dependencies
-          command: |
-            pip3 install -r molecule/requirements.txt
-      - run:
           name: Install required Ansible roles
           command: |
             ansible-galaxy install -r molecule/default/requirements.yml
+      - run:
+          name: Wait for Selenium sidecar
+          command: |
+            set -euo pipefail
+
+            HOSTS=("selenium" "localhost")
+            PATHS=("/wd/hub/status" "/status")
+
+            for i in $(seq 1 90); do
+              for h in "${HOSTS[@]}"; do
+                for p in "${PATHS[@]}"; do
+                  if curl -fsS "http://${h}:4444${p}" | grep -Eiq '"ready"\s*:\s*true|ready"\s*:\s*true'; then
+                    echo "Selenium is ready at http://${h}:4444${p}"
+                    exit 0
+                  fi
+                done
+              done
+              sleep 2
+            done
+
+            echo "Selenium did not become ready" >&2
+            for h in "${HOSTS[@]}"; do
+              for p in "${PATHS[@]}"; do
+                echo "[DEBUG] curl http://${h}:4444${p}" >&2
+                curl -v "http://${h}:4444${p}" || true
+              done
+            done
+            exit 1
       - molecule-ec2/execute:
           ansible-user: << parameters.ansible-user >>
           aws-ami-name: << parameters.aws-ami-name >>
@@ -97,15 +125,15 @@ workflows:
           requires:
             - yamllint
       - molecule:
-          ansible-user: 'ec2-user'
-          aws-ami-name: 'centos-stream9-1*'
+          ansible-user: ec2-user
+          aws-ami-name: centos-stream9-1*
           aws-ami-owner-id: '808683561341'
-          aws-instance-type: 't2.medium'
-          aws-resource-name: 'circleci_ansible-playbook_rm_install_cs9'
+          aws-instance-type: t2.medium
+          aws-resource-name: circleci_ansible-playbook_rm_install_cs9
           aws-session-duration: '3600'
-          aws-vpc-subnet-id: 'subnet-022a704b3061b8b39'
+          aws-vpc-subnet-id: subnet-022a704b3061b8b39
           circleci-timeout: '30m'
-          molecule-scenario-name: 'default'
+          molecule-scenario-name: default
           context: AWS_OPENID_CONNECT_TOKENS
           requires:
             - ansible-lint
