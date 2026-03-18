@@ -1,33 +1,136 @@
 ---
 version: 2.1
 
-executors:
-  molecule-with-selenium:
-    docker:
-      - image: ghcr.io/docker-images-mamono210/circleci-executors/molecule-default:latest
-      - image: selenium/standalone-firefox:latest
-        name: selenium
-    resource_class: small
-  trailing-whitespace:
-    docker:
-      - image: ghcr.io/docker-images-mamono210/circleci-executors/trailing-whitespace:latest
-    resource_class: small
-
 orbs:
   ansible-lint: orbss/ansible-lint@0.0.3
   aws-cli: circleci/aws-cli@3.1.1
   molecule-ec2: orbss/molecule-ec2@0.0.9
   yamllint: orbss/yamllint@0.0.4
 
+parameters:
+  ansible_lint_executor_image:
+    type: string
+    default: ghcr.io/docker-images-mamono210/circleci-executors/ansible-lint:26.1.1-py3.14
+  ansible_lint_executor_resource_class:
+    type: enum
+    enum: [small, medium, medium+, large]
+    default: small
+  molecule_ansible_user:
+    type: string
+    default: ec2-user
+  molecule_aws_ami_name:
+    type: string
+    default: centos-stream9-1*
+  molecule_aws_ami_owner_id:
+    type: string
+    default: "808683561341"
+  molecule_aws_instance_type:
+    type: string
+    default: t2.medium
+  molecule_aws_resource_name:
+    type: string
+    default: circleci_ansible-playbook_rm_install_cs9
+  molecule_aws_session_duration:
+    type: string
+    default: "3600"
+  molecule_aws_vpc_subnet_id:
+    type: string
+    default: subnet-022a704b3061b8b39
+  molecule_circleci_timeout:
+    type: string
+    default: 15m
+  molecule_context:
+    type: string
+    default: AWS_OPENID_CONNECT_TOKENS
+  molecule_executor_image:
+    type: string
+    default: ghcr.io/docker-images-mamono210/circleci-executors/molecule-default:26.3.0-py3.14-ans13.4.0
+  molecule_executor_resource_class:
+    type: enum
+    enum: [small, medium, medium+, large]
+    default: small
+  molecule_scenario_name:
+    type: string
+    default: default
+  molecule_selenium_image:
+    type: string
+    default: selenium/standalone-firefox:latest
+  trailing_whitespace_executor_image:
+    type: string
+    default: ghcr.io/docker-images-mamono210/circleci-executors/trailing-whitespace:py3.14-20260210
+  trailing_whitespace_executor_resource_class:
+    type: enum
+    enum: [small, medium, medium+, large]
+    default: small
+  yamllint_executor_image:
+    type: string
+    default: ghcr.io/docker-images-mamono210/circleci-executors/yamllint:1.38.0-py3.14
+  yamllint_executor_resource_class:
+    type: enum
+    enum: [small, medium, medium+, large]
+    default: small
+
+executors:
+  ansible-lint-executor:
+    parameters:
+      image:
+        type: string
+      resource_class:
+        type: enum
+        enum: [small, medium, medium+, large]
+    docker:
+      - image: << parameters.image >>
+    resource_class: << parameters.resource_class >>
+  molecule-with-selenium:
+    parameters:
+      primary_image:
+        type: string
+      selenium_image:
+        type: string
+      resource_class:
+        type: enum
+        enum: [small, medium, medium+, large]
+    docker:
+      - image: << parameters.primary_image >>
+      - image: << parameters.selenium_image >>
+        name: selenium
+    resource_class: << parameters.resource_class >>
+  trailing-whitespace-executor:
+    parameters:
+      image:
+        type: string
+      resource_class:
+        type: enum
+        enum: [small, medium, medium+, large]
+    docker:
+      - image: << parameters.image >>
+    resource_class: << parameters.resource_class >>
+  yamllint-executor:
+    parameters:
+      image:
+        type: string
+      resource_class:
+        type: enum
+        enum: [small, medium, medium+, large]
+    docker:
+      - image: << parameters.image >>
+    resource_class: << parameters.resource_class >>
+
 jobs:
   ansible-lint:
-    executor: ansible-lint/default
+    executor:
+      name: ansible-lint-executor
+      image: << pipeline.parameters.ansible_lint_executor_image >>
+      resource_class: << pipeline.parameters.ansible_lint_executor_resource_class >>
     steps:
       - checkout
-      - ansible-lint/execute:
-          molecule-playbook-test: true
-  molecule:
-    executor: molecule-with-selenium
+      - ansible-lint/execute
+  molecule-ec2:
+    executor:
+      name: molecule-with-selenium
+      primary_image: << pipeline.parameters.molecule_executor_image >>
+      selenium_image: << pipeline.parameters.molecule_selenium_image >>
+      resource_class: << pipeline.parameters.molecule_executor_resource_class >>
     parameters:
       ansible-user:
         type: string
@@ -47,10 +150,8 @@ jobs:
         type: string
       molecule-scenario-name:
         type: string
-        default: default
     steps:
       - checkout
-      - aws-cli/setup
       - aws-cli/setup:
           profile-name: default
           role-arn: ${AWS_ROLE_ARN}
@@ -71,7 +172,7 @@ jobs:
             for i in $(seq 1 90); do
               for h in "${HOSTS[@]}"; do
                 for p in "${PATHS[@]}"; do
-                  if curl -fsS "http://${h}:4444${p}" | grep -Eiq '"ready"\s*:\s*true|ready"\s*:\s*true'; then
+                  if curl -fsS "http://${h}:4444${p}" | grep -Eiq '"ready"\s*:\s*true'; then
                     echo "Selenium is ready at http://${h}:4444${p}"
                     exit 0
                   fi
@@ -100,22 +201,28 @@ jobs:
       - store_artifacts:
           path: molecule/<< parameters.molecule-scenario-name >>/files/screenshot.png
           destination: screenshot.<< parameters.molecule-scenario-name >>.png
-  yamllint:
-    executor: yamllint/default
-    steps:
-      - checkout
-      - yamllint/execute
   trailing-whitespace:
-    executor: trailing-whitespace
+    executor:
+      name: trailing-whitespace-executor
+      image: << pipeline.parameters.trailing_whitespace_executor_image >>
+      resource_class: << pipeline.parameters.trailing_whitespace_executor_resource_class >>
     steps:
       - checkout
       - run:
           name: Execute trailing-whitespace
           command: trailing-whitespace
+  yamllint:
+    executor:
+      name: yamllint-executor
+      image: << pipeline.parameters.yamllint_executor_image >>
+      resource_class: << pipeline.parameters.yamllint_executor_resource_class >>
+    steps:
+      - checkout
+      - yamllint/execute
 
 workflows:
   version: 2.1
-  redmica-install:
+  build:
     jobs:
       - trailing-whitespace
       - yamllint:
@@ -124,16 +231,16 @@ workflows:
       - ansible-lint:
           requires:
             - yamllint
-      - molecule:
-          ansible-user: ec2-user
-          aws-ami-name: centos-stream9-1*
-          aws-ami-owner-id: '808683561341'
-          aws-instance-type: t2.medium
-          aws-resource-name: circleci_ansible-playbook_rm_install_cs9
-          aws-session-duration: '3600'
-          aws-vpc-subnet-id: subnet-022a704b3061b8b39
-          circleci-timeout: '30m'
-          molecule-scenario-name: default
-          context: AWS_OPENID_CONNECT_TOKENS
+      - molecule-ec2:
+          ansible-user: << pipeline.parameters.molecule_ansible_user >>
+          aws-ami-name: << pipeline.parameters.molecule_aws_ami_name >>
+          aws-ami-owner-id: << pipeline.parameters.molecule_aws_ami_owner_id >>
+          aws-instance-type: << pipeline.parameters.molecule_aws_instance_type >>
+          aws-resource-name: << pipeline.parameters.molecule_aws_resource_name >>
+          aws-session-duration: << pipeline.parameters.molecule_aws_session_duration >>
+          aws-vpc-subnet-id: << pipeline.parameters.molecule_aws_vpc_subnet_id >>
+          circleci-timeout: << pipeline.parameters.molecule_circleci_timeout >>
+          molecule-scenario-name: << pipeline.parameters.molecule_scenario_name >>
+          context: << pipeline.parameters.molecule_context >>
           requires:
             - ansible-lint
